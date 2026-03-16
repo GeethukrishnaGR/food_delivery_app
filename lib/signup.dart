@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bitenow/loginsignup.dart';
+import 'package:bitenow/newacc.dart';
+import 'package:bitenow/newpassword.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,13 +49,17 @@ class Signup extends StatelessWidget {
 
                   const SizedBox(height: 20),
 
-                  const Text(
-                    "Welcome", style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                const Align(
+  alignment: Alignment.centerLeft,
+  child: Text(
+    "Welcome",
+    style: TextStyle(
+      fontSize: 24,
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
                   
                   const SizedBox(height: 20),
   const Row(
@@ -79,12 +85,18 @@ class Signup extends StatelessWidget {
                     ),
                    
                   ),
-
-                  const SizedBox(height: 20),
-
-                 Text("Password",
-                            style: TextStyle(color: Colors.black,fontSize: 18,
-                            fontWeight: FontWeight.bold)),
+SizedBox(height: 15,),
+                 const Align(
+  alignment: Alignment.centerLeft,
+  child: Text(
+    "password",
+    style: TextStyle(
+      fontSize: 18,
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
                   Container(
                     height: size.height * 0.06,
                     padding: const EdgeInsets.all(8),
@@ -105,18 +117,30 @@ class Signup extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                const SizedBox(height: 10),
 
-                  
-                  const Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "Forget Password?",
-                      style: TextStyle(color: Colors.deepOrange),
-                    ),
-                  ),
+Align(
+  alignment: Alignment.centerRight,
+  child: GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>  Newpassword(),
+        ),
+      );
+    },
+    child: const Text(
+      "Forget Password?",
+      style: TextStyle(
+        color: Colors.deepOrange,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ),
+),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 40),
 
                   /// LOGIN BUTTON
                   GestureDetector(
@@ -128,7 +152,7 @@ class Signup extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Loginsignup()),
+                            builder: (context) =>NewAcc()),
                       );
                     },
                     child: Container(

@@ -10,7 +10,7 @@ class Loginsignup extends StatelessWidget {
   Widget build(BuildContext context) {
       final Size size = MediaQuery.of(context).size;
     return Scaffold(
-     
+      backgroundColor: Colors.deepOrange,
         body: 
         Padding(
           padding: const EdgeInsets.all(10.0),

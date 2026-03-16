@@ -1,6 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 
+import 'package:bitenow/finger.dart';
+import 'package:bitenow/newacc.dart';
+import 'package:bitenow/newpassword.dart';
 import 'package:bitenow/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,14 +50,17 @@ class Login extends StatelessWidget {
                 children: [
 
                   const SizedBox(height: 20),
-
-                  const Text(
-                    "Welcome", style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+Align(
+  alignment: Alignment.centerLeft,
+  child: const Text(
+    "Welcome",
+    style: TextStyle(
+      fontSize: 24,
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
                   Text(
                     "Enter your username and password to access your account and continue ordering your favorite food.", 
                     style: TextStyle(
@@ -114,17 +120,28 @@ class Login extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                const SizedBox(height: 10),
 
-                  
-                  const Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "Forget Password?",
-                      style: TextStyle(color: Colors.deepOrange),
-                    ),
-                  ),
-
+Align(
+  alignment: Alignment.centerRight,
+  child: GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Newpassword(),
+        ),
+      );
+    },
+    child: const Text(
+      "Forget Password?",
+      style: TextStyle(
+        color: Colors.deepOrange,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ),
+),
                   const SizedBox(height: 30),
 
                   /// LOGIN BUTTON
@@ -137,7 +154,7 @@ class Login extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Signup()),
+                            builder: (context) =>  NewAcc()),
                       );
                     },
                     child: Container(
@@ -215,23 +232,34 @@ Row(
     const SizedBox(width: 20),
 
     /// Fingerprint
-    Container(
-      height: 50,
-      width: 50,
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 252, 211, 211),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade300,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: const Icon(
-        Icons.fingerprint,
-        color: Colors.deepOrange,
-        size: 28,
+    GestureDetector(
+       onTap: () async {
+                     
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Finger()),
+                      );
+                    },
+      child: Container(
+        height: 50,
+        width: 50,
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 252, 211, 211),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade300,
+              blurRadius: 5,
+            ),
+          ],
+        ),
+        child: const Icon(
+          Icons.fingerprint,
+          color: Colors.deepOrange,
+          size: 28,
+        ),
       ),
     ),
 
@@ -252,7 +280,7 @@ Row(
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const Signup(), 
+            builder: (context) =>  Signup(), 
           ),
         );
       },
