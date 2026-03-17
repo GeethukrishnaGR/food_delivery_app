@@ -102,20 +102,20 @@ GestureDetector(
       barrierDismissible: true,
       barrierLabel: "Profile",
       transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return Align(
-          alignment: Alignment.centerRight,
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.7,
-            height: double.infinity,
-            color: Colors.deepOrange,
-            child: const ProfilePage(),
-          ),
-        );
-      },
+    pageBuilder: (context, animation, secondaryAnimation) {
+  return Align(
+    alignment: Alignment.centerRight,
+    child: Container(
+      width: MediaQuery.of(context).size.width * 0.7,
+      height: double.infinity,
+      color: Colors.deepOrange,
+      child: ProfilePage(),
+    ),
+  );
+},
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         return SlideTransition(
-          position: Tween(
+          position: Tween<Offset>(
             begin: const Offset(1, 0),
             end: const Offset(0, 0),
           ).animate(animation),

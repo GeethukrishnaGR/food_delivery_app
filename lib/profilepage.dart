@@ -1,3 +1,7 @@
+import 'package:bitenow/dlvryadrs.dart';
+import 'package:bitenow/myorders.dart';
+import 'package:bitenow/myprofile.dart';
+import 'package:bitenow/payment.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -16,7 +20,7 @@ class ProfilePage extends StatelessWidget {
          Row(
   children: [
 
-    /// PROFILE IMAGE CONTAINER
+    
     Container(
   padding: const EdgeInsets.all(15),
   decoration: BoxDecoration(
@@ -58,28 +62,226 @@ class ProfilePage extends StatelessWidget {
 
   ],
 ),
- const SizedBox(height: 35),
+ const SizedBox(height: 20),
 
-    /// MY ORDERS ROW
-    const Row(
-      children: [
-
-        Icon(
-          Icons.shopping_bag_outlined,
+   
+     GestureDetector(
+       onTap: () async {
+                     
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>Myorders()),
+                      );
+                    },
+       child: Row(
+         children: [
+           Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 251, 245, 243),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(
+          Icons.shopping_bag,
+          color: Colors.deepOrange,
+          size: 20,
+        ),
+           ),
+       
+           const SizedBox(width: 20),
+       
+           const Text(
+        "My Order",
+        style: TextStyle(
+          fontSize: 20,
           color: Colors.white,
+          fontWeight: FontWeight.bold,
         ),
+           ),
+         ],
+       ),
+     ),
+    const SizedBox(height: 5),
 
-        SizedBox(width: 10),
-
-        Text(
-          "My Orders",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+    /// DIVIDER
+    const Divider(
+      thickness: 1,
     ),
+const SizedBox(height: 15),
+
+   
+    GestureDetector(
+       onTap: () async {
+                     
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>Myprofile()),
+                      );
+                    },
+      child: Row(
+        children: [
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 251, 245, 243),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(
+          Icons.person,
+          color: Colors.deepOrange,
+          size: 20,
+        ),
+      ),
+      
+      const SizedBox(width: 10),
+      
+      const Text(
+        "My Profile",
+        style: TextStyle(
+          fontSize: 20,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+        ],
+      ),
+    ),
+
+    const SizedBox(height: 5),
+
+    /// DIVIDER
+    const Divider(
+      thickness: 1,
+    ),
+const SizedBox(height: 15),
+
+   
+    Row(
+  children: [
+    GestureDetector(
+        onTap: () async {
+                     
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>Dlvryadrs()),
+                      );
+                    },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 251, 245, 243),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(
+          Icons.location_on,
+          color: Colors.deepOrange,
+          size: 20,
+        ),
+      ),
+    ),
+
+    const SizedBox(width: 10),
+
+    const Text(
+      "Delivery Address",
+      style: TextStyle(
+        fontSize: 16,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ],
+),
+
+
+    const SizedBox(height: 5),
+
+    /// DIVIDER
+    const Divider(
+      thickness: 1,
+    ),
+const SizedBox(height: 10),
+
+   
+     Row(
+  children: [
+    GestureDetector(
+        onTap: () async {
+                     
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>Payment()),
+                      );
+                    },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 251, 245, 243),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(
+          Icons.payment,
+          color: Colors.deepOrange,
+          size: 20,
+        ),
+      ),
+    ),
+
+    const SizedBox(width: 10),
+
+    const Text(
+      "Payment Methods",
+      style: TextStyle(
+        fontSize: 18,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ],
+),
+
+
+    const SizedBox(height: 5),
+
+    /// DIVIDER
+    const Divider(
+      thickness: 1,
+    ),
+const SizedBox(height: 10),
+
+   
+    Row(
+  children: [
+    Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 251, 245, 243),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Icon(
+        Icons.phone_callback,
+        color: Colors.deepOrange,
+        size: 20,
+      ),
+    ),
+
+    const SizedBox(width: 10),
+
+    const Text(
+      "Contact as",
+      style: TextStyle(
+        fontSize: 20,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ],
+),
+
 
     const SizedBox(height: 10),
 
@@ -87,6 +289,110 @@ class ProfilePage extends StatelessWidget {
     const Divider(
       thickness: 1,
     ),
+const SizedBox(height: 10),
+
+   
+    Row(
+  children: [
+    Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 251, 245, 243),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Icon(
+        Icons.help,
+        color: Colors.deepOrange,
+        size: 20,
+      ),
+    ),
+
+    const SizedBox(width: 10),
+
+    const Text(
+      "Helps & FAQS",
+      style: TextStyle(
+        fontSize: 20,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ],
+),
+
+    const SizedBox(height: 10),
+
+    /// DIVIDER
+    const Divider(
+      thickness: 1,
+    ),
+const SizedBox(height: 10),
+
+   
+    Row(
+  children: [
+    Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 251, 245, 243),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Icon(
+        Icons.settings,
+        color: Colors.deepOrange,
+        size: 20,
+      ),
+    ),
+
+    const SizedBox(width: 10),
+
+    const Text(
+      "Settings",
+      style: TextStyle(
+        fontSize: 20,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ],
+),
+
+    const SizedBox(height: 10),
+
+    /// DIVIDER
+    const Divider(
+      thickness: 1,
+    ),
+const SizedBox(height: 20),
+
+   
+    Row(
+  children: [
+    Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 251, 245, 243),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Icon(
+        Icons.logout,
+        color: Colors.deepOrange,
+        size: 20,
+      ),
+    ),
+
+    const SizedBox(width: 10),
+
+    const Text(
+      "Log Out",
+      style: TextStyle(
+        fontSize: 20,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ],
+),
 
         ],
       ),
