@@ -1,7 +1,10 @@
+import 'package:bitenow/contact.dart';
 import 'package:bitenow/dlvryadrs.dart';
+import 'package:bitenow/help.dart';
 import 'package:bitenow/myorders.dart';
 import 'package:bitenow/myprofile.dart';
 import 'package:bitenow/payment.dart';
+import 'package:bitenow/settings.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -158,10 +161,8 @@ const SizedBox(height: 15),
 const SizedBox(height: 15),
 
    
-    Row(
-  children: [
     GestureDetector(
-        onTap: () async {
+      onTap: () async {
                      
                       Navigator.pushReplacement(
                         context,
@@ -169,7 +170,9 @@ const SizedBox(height: 15),
                             builder: (context) =>Dlvryadrs()),
                       );
                     },
-      child: Container(
+      child: Row(
+        children: [
+      Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 251, 245, 243),
@@ -181,20 +184,20 @@ const SizedBox(height: 15),
           size: 20,
         ),
       ),
-    ),
-
-    const SizedBox(width: 10),
-
-    const Text(
-      "Delivery Address",
-      style: TextStyle(
-        fontSize: 16,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
+      
+      const SizedBox(width: 10),
+      
+      const Text(
+        "Delivery Address",
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+        ],
       ),
     ),
-  ],
-),
 
 
     const SizedBox(height: 5),
@@ -206,10 +209,8 @@ const SizedBox(height: 15),
 const SizedBox(height: 10),
 
    
-     Row(
-  children: [
-    GestureDetector(
-        onTap: () async {
+     GestureDetector(
+       onTap: () async {
                      
                       Navigator.pushReplacement(
                         context,
@@ -217,32 +218,37 @@ const SizedBox(height: 10),
                             builder: (context) =>Payment()),
                       );
                     },
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 251, 245, 243),
-          borderRadius: BorderRadius.circular(10),
+       child: Row(
+         children: [
+           GestureDetector(
+         
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 251, 245, 243),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Icon(
+            Icons.payment,
+            color: Colors.deepOrange,
+            size: 20,
+          ),
         ),
-        child: const Icon(
-          Icons.payment,
-          color: Colors.deepOrange,
-          size: 20,
+           ),
+       
+           const SizedBox(width: 10),
+       
+           const Text(
+        "Payment Methods",
+        style: TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
         ),
-      ),
-    ),
-
-    const SizedBox(width: 10),
-
-    const Text(
-      "Payment Methods",
-      style: TextStyle(
-        fontSize: 18,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  ],
-),
+           ),
+         ],
+       ),
+     ),
 
 
     const SizedBox(height: 5),
@@ -254,33 +260,46 @@ const SizedBox(height: 10),
 const SizedBox(height: 10),
 
    
-    Row(
-  children: [
-    Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 251, 245, 243),
-        borderRadius: BorderRadius.circular(10),
+    GestureDetector(
+       onTap: () async {
+                     
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>Contact()),
+                      );
+                    },
+      child: Row(
+        children: [
+      GestureDetector(
+       
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 251, 245, 243),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Icon(
+            Icons.phone_callback,
+            color: Colors.deepOrange,
+            size: 20,
+          ),
+        ),
       ),
-      child: const Icon(
-        Icons.phone_callback,
-        color: Colors.deepOrange,
-        size: 20,
+      
+      const SizedBox(width: 10),
+      
+      const Text(
+        "Contact as",
+        style: TextStyle(
+          fontSize: 20,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+        ],
       ),
     ),
-
-    const SizedBox(width: 10),
-
-    const Text(
-      "Contact as",
-      style: TextStyle(
-        fontSize: 20,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  ],
-),
 
 
     const SizedBox(height: 10),
@@ -292,33 +311,43 @@ const SizedBox(height: 10),
 const SizedBox(height: 10),
 
    
-    Row(
-  children: [
-    Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 251, 245, 243),
-        borderRadius: BorderRadius.circular(10),
+    GestureDetector(
+        onTap: () async {
+                     
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>Help()),
+                      );
+                    },
+      child: Row(
+        children: [
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 251, 245, 243),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(
+          Icons.help,
+          color: Colors.deepOrange,
+          size: 20,
+        ),
       ),
-      child: const Icon(
-        Icons.help,
-        color: Colors.deepOrange,
-        size: 20,
+      
+      const SizedBox(width: 10),
+      
+      const Text(
+        "Helps & FAQS",
+        style: TextStyle(
+          fontSize: 20,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+        ],
       ),
     ),
-
-    const SizedBox(width: 10),
-
-    const Text(
-      "Helps & FAQS",
-      style: TextStyle(
-        fontSize: 20,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  ],
-),
 
     const SizedBox(height: 10),
 
@@ -329,33 +358,43 @@ const SizedBox(height: 10),
 const SizedBox(height: 10),
 
    
-    Row(
-  children: [
-    Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 251, 245, 243),
-        borderRadius: BorderRadius.circular(10),
+    GestureDetector(
+       onTap: () async {
+                     
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>Settings()),
+                      );
+                    },
+      child: Row(
+        children: [
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 251, 245, 243),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(
+          Icons.settings,
+          color: Colors.deepOrange,
+          size: 20,
+        ),
       ),
-      child: const Icon(
-        Icons.settings,
-        color: Colors.deepOrange,
-        size: 20,
+      
+      const SizedBox(width: 10),
+      
+      const Text(
+        "Settings",
+        style: TextStyle(
+          fontSize: 20,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+        ],
       ),
     ),
-
-    const SizedBox(width: 10),
-
-    const Text(
-      "Settings",
-      style: TextStyle(
-        fontSize: 20,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  ],
-),
 
     const SizedBox(height: 10),
 
@@ -366,34 +405,90 @@ const SizedBox(height: 10),
 const SizedBox(height: 20),
 
    
-    Row(
-  children: [
-    Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 251, 245, 243),
-        borderRadius: BorderRadius.circular(10),
+    GestureDetector(
+  onTap: () {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
-      child: const Icon(
-        Icons.logout,
-        color: Colors.deepOrange,
-        size: 20,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          height: 200,
+          child: Column(
+            children: [
+              
+              const SizedBox(height: 10),
+
+              const Text(
+                "Are you sure you want to log out?",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 20),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+              
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 249, 202, 218),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Cancel",
+                      style: TextStyle(color: Colors.deepOrange)),
+                  ),
+
+                 
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange,
+                    ),
+                    onPressed: () {
+                     
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Yes,Log Out",
+                    style: TextStyle(color: Colors.white),),
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
+  },
+  child: Row(
+    children: [
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 251, 245, 243),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(
+          Icons.logout,
+          color: Colors.deepOrange,
+          size: 20,
+        ),
       ),
-    ),
-
-    const SizedBox(width: 10),
-
-    const Text(
-      "Log Out",
-      style: TextStyle(
-        fontSize: 20,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
+      const SizedBox(width: 10),
+      const Text(
+        "Log Out",
+        style: TextStyle(
+          fontSize: 20,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-    ),
-  ],
-),
-
+    ],
+  ),
+)
         ],
       ),
     );

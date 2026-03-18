@@ -1,3 +1,5 @@
+import 'package:bitenow/cartpage.dart';
+import 'package:bitenow/notificationpage.dart';
 import 'package:bitenow/profilepage.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -75,20 +77,80 @@ class _HomepageState extends State<Homepage> {
 
                     const SizedBox(width: 10),
 
-                    const CircleAvatar(
-                      radius: 15,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.shopping_cart,
-                          size: 18, color: Colors.pinkAccent),
+                    GestureDetector(
+                       onTap: () {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: "Cart",
+      transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (context, animation, secondaryAnimation) {
+  return Align(
+    alignment: Alignment.centerRight,
+    child: Container(
+      width: MediaQuery.of(context).size.width * 0.7,
+      height: double.infinity,
+      color: Colors.deepOrange,
+      child:Cartpage(),
+    ),
+  );
+},
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: const Offset(0, 0),
+          ).animate(animation),
+          child: child,
+        );
+      },
+    );
+  },
+                      child: const CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.white,
+                        child: Icon(Icons.shopping_cart,
+                            size: 18, color: Colors.pinkAccent),
+                      ),
                     ),
 
                     const SizedBox(width: 10),
 
-                    const CircleAvatar(
-                      radius: 15,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.notifications,
-                          size: 18, color: Colors.pinkAccent),
+                    GestureDetector(
+                       onTap: () {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: "Notification",
+      transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (context, animation, secondaryAnimation) {
+  return Align(
+    alignment: Alignment.centerRight,
+    child: Container(
+      width: MediaQuery.of(context).size.width * 0.7,
+      height: double.infinity,
+      color: Colors.deepOrange,
+      child: Notificationpage(),
+    ),
+  );
+},
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: const Offset(0, 0),
+          ).animate(animation),
+          child: child,
+        );
+      },
+    );
+  },
+                      child: const CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.white,
+                        child: Icon(Icons.notifications,
+                            size: 18, color: Colors.pinkAccent),
+                      ),
                     ),
 
                    

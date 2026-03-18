@@ -45,7 +45,7 @@ class AddCard extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// EXPIRY + CVV
+          
             Row(
               children: [
                 Expanded(
@@ -60,7 +60,6 @@ class AddCard extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            /// SAVE BUTTON
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -80,7 +79,6 @@ class AddCard extends StatelessWidget {
     );
   }
 
-  /// 🔧 REUSABLE FIELD
   Widget _buildField(String title, String hint) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
