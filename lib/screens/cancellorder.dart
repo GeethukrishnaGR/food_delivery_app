@@ -1,4 +1,4 @@
-import 'package:bitenow/cancelsuccess.dart';
+import 'package:bitenow/screens/cancelsuccess.dart';
 import 'package:flutter/material.dart';
 
 class Cancellorder extends StatefulWidget {

@@ -1,25 +1,18 @@
-import 'package:bitenow/addcard.dart';
+import 'package:bitenow/screens/addaddress.dart';
 import 'package:flutter/material.dart';
 
-class Payment extends StatefulWidget {
-  const Payment({super.key});
+class Dlvryadrs extends StatefulWidget {
+  const Dlvryadrs({super.key});
 
   @override
-  State<Payment> createState() => _PaymentState();
+  State<Dlvryadrs> createState() => _DlvryadrsState();
 }
 
-class _PaymentState extends State<Payment> {
+class _DlvryadrsState extends State<Dlvryadrs> {
   int selectedIndex = -1;
 
-  List<String> titles = ["Card", "Apple Pay", "PayPal", "Google Pay"];
-
-  /// ✅ ICON LIST (matches each title)
-  List<IconData> icons = [
-    Icons.credit_card,
-    Icons.apple,
-    Icons.account_balance_wallet,
-    Icons.g_mobiledata,
-  ];
+  List<String> titles = ["My Home", "My Office", "Parents Home"];
+  List<String> addresses = ["", "", ""]; // store updated addresses
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +27,7 @@ class _PaymentState extends State<Payment> {
             color: Colors.orange,
             alignment: Alignment.center,
             child: const Text(
-              "Payment Method",
+              "Delivery Address",
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -57,7 +50,7 @@ class _PaymentState extends State<Payment> {
                 children: [
                   const SizedBox(height: 10),
 
-                  /// 🔁 PAYMENT LIST
+                  /// 🔁 ADDRESS LIST
                   Expanded(
                     child: ListView.builder(
                       itemCount: titles.length,
@@ -71,21 +64,30 @@ class _PaymentState extends State<Payment> {
                                 });
                               },
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  /// ✅ ICON FROM LIST
-                                  Icon(
-                                    icons[index],
-                                    size: 50,
-                                    color: Colors.pink,
-                                  ),
-
+                                  const Icon(Icons.home, color: Colors.pink),
                                   const SizedBox(width: 10),
 
-                                  /// TEXT
+                                  /// TEXT + ADDRESS
                                   Expanded(
-                                    child: Text(
-                                      titles[index],
-                                      style: const TextStyle(fontSize: 18),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          titles[index],
+                                          style: const TextStyle(fontSize: 18),
+                                        ),
+
+                                        /// 👇 SHOW UPDATED ADDRESS
+                                        if (addresses[index].isNotEmpty)
+                                          Text(
+                                            addresses[index],
+                                            style: const TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
 
@@ -108,15 +110,21 @@ class _PaymentState extends State<Payment> {
                     ),
                   ),
 
-                  /// BUTTON
+                 
                   GestureDetector(
-                     onTap: () async {
-                     
-                      Navigator.pushReplacement(
+                    onTap: () async {
+                      final newAddress = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>AddCard()),
+                          builder: (context) => const AddAddress(),
+                        ),
                       );
+
+                      if (newAddress != null && selectedIndex != -1) {
+                        setState(() {
+                          addresses[selectedIndex] = newAddress;
+                        });
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -126,7 +134,7 @@ class _PaymentState extends State<Payment> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Text(
-                        "Add New Card",
+                        "Add new Address",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

@@ -1,15 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bitenow/screens/newacc.dart';
+import 'package:bitenow/screens/newpassword.dart';
 
-import 'package:bitenow/finger.dart';
-import 'package:bitenow/newacc.dart';
-import 'package:bitenow/newpassword.dart';
-import 'package:bitenow/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Login extends StatelessWidget {
-  const Login({super.key});
+class Signup extends StatelessWidget {
+  const Signup({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +24,9 @@ class Login extends StatelessWidget {
             color: Colors.orange,
             alignment: Alignment.center,
             child: const Text(
-              "Log In",
+              "Hello!",
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -50,9 +48,10 @@ class Login extends StatelessWidget {
                 children: [
 
                   const SizedBox(height: 20),
-Align(
+
+                const Align(
   alignment: Alignment.centerLeft,
-  child: const Text(
+  child: Text(
     "Welcome",
     style: TextStyle(
       fontSize: 24,
@@ -61,15 +60,7 @@ Align(
     ),
   ),
 ),
-                  Text(
-                    "Enter your username and password to access your account and continue ordering your favorite food.", 
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                     
-                    ),
-                  ),
-
+                  
                   const SizedBox(height: 20),
   const Row(
                       children: [
@@ -94,12 +85,18 @@ Align(
                     ),
                    
                   ),
-
-                  const SizedBox(height: 20),
-
-                 Text("Password",
-                            style: TextStyle(color: Colors.black,fontSize: 18,
-                            fontWeight: FontWeight.bold)),
+SizedBox(height: 15,),
+                 const Align(
+  alignment: Alignment.centerLeft,
+  child: Text(
+    "password",
+    style: TextStyle(
+      fontSize: 18,
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
                   Container(
                     height: size.height * 0.06,
                     padding: const EdgeInsets.all(8),
@@ -129,7 +126,7 @@ Align(
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Newpassword(),
+          builder: (context) =>  Newpassword(),
         ),
       );
     },
@@ -142,7 +139,8 @@ Align(
     ),
   ),
 ),
-                  const SizedBox(height: 30),
+
+                  const SizedBox(height: 40),
 
                   /// LOGIN BUTTON
                   GestureDetector(
@@ -154,7 +152,7 @@ Align(
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>  NewAcc()),
+                            builder: (context) =>NewAcc()),
                       );
                     },
                     child: Container(
@@ -185,10 +183,13 @@ Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: [
 
-    /// Google
+   
+    const SizedBox(width: 20),
+
+    /// Fingerprint
     Container(
-      height: 50,
-      width: 50,
+      height: 80,
+      width: 80,
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 252, 211, 211),
         shape: BoxShape.circle,
@@ -200,66 +201,9 @@ Row(
         ],
       ),
       child: const Icon(
-        Icons.g_mobiledata,
-        size: 35,
-        color: Colors.red,
-      ),
-    ),
-
-    const SizedBox(width: 20),
-
-    /// Facebook
-    Container(
-      height: 50,
-      width: 50,
-      decoration: BoxDecoration(
-         color: const Color.fromARGB(255, 252, 211, 211),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade300,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: const Icon(
-        Icons.facebook,
+        Icons.fingerprint,
         color: Colors.deepOrange,
-        size: 28,
-      ),
-    ),
-
-    const SizedBox(width: 20),
-
-    /// Fingerprint
-    GestureDetector(
-       onTap: () async {
-                     
-
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Finger()),
-                      );
-                    },
-      child: Container(
-        height: 50,
-        width: 50,
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 252, 211, 211),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              blurRadius: 5,
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.fingerprint,
-          color: Colors.deepOrange,
-          size: 28,
-        ),
+        size: 60,
       ),
     ),
 
@@ -269,27 +213,16 @@ const SizedBox(height: 20),
 
 Row(
   mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    const Text(
+  children: const [
+    Text(
       "Don't have an account? ",
       style: TextStyle(color: Colors.grey),
     ),
-
-    GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>  Signup(), 
-          ),
-        );
-      },
-      child: const Text(
-        "Sign up",
-        style: TextStyle(
-          color: Colors.deepOrange,
-          fontWeight: FontWeight.bold,
-        ),
+    Text(
+      "Sign up",
+      style: TextStyle(
+        color: Colors.deepOrange,
+        fontWeight: FontWeight.bold,
       ),
     ),
   ],

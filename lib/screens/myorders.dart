@@ -1,4 +1,5 @@
-import 'package:bitenow/cancellorder.dart';
+import 'package:bitenow/screens/cancellorder.dart';
+import 'package:bitenow/screens/confirmoders.dart';
 import 'package:flutter/material.dart';
 
 class Myorders extends StatelessWidget {
@@ -47,17 +48,27 @@ class Myorders extends StatelessWidget {
           children: [
 
           
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.deepOrange,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                "Active",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+            GestureDetector(
+               onTap: () async {
+                     
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>Confirmoders()),
+                      );
+                    },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.deepOrange,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  "Active",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

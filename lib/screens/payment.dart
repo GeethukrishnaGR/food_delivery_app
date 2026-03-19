@@ -1,18 +1,25 @@
-import 'package:bitenow/addaddress.dart';
+import 'package:bitenow/screens/addcard.dart';
 import 'package:flutter/material.dart';
 
-class Dlvryadrs extends StatefulWidget {
-  const Dlvryadrs({super.key});
+class Payment extends StatefulWidget {
+  const Payment({super.key});
 
   @override
-  State<Dlvryadrs> createState() => _DlvryadrsState();
+  State<Payment> createState() => _PaymentState();
 }
 
-class _DlvryadrsState extends State<Dlvryadrs> {
+class _PaymentState extends State<Payment> {
   int selectedIndex = -1;
 
-  List<String> titles = ["My Home", "My Office", "Parents Home"];
-  List<String> addresses = ["", "", ""]; // store updated addresses
+  List<String> titles = ["Card", "Apple Pay", "PayPal", "Google Pay"];
+
+  /// ✅ ICON LIST (matches each title)
+  List<IconData> icons = [
+    Icons.credit_card,
+    Icons.apple,
+    Icons.account_balance_wallet,
+    Icons.g_mobiledata,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +34,7 @@ class _DlvryadrsState extends State<Dlvryadrs> {
             color: Colors.orange,
             alignment: Alignment.center,
             child: const Text(
-              "Delivery Address",
+              "Payment Method",
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -48,9 +55,10 @@ class _DlvryadrsState extends State<Dlvryadrs> {
               ),
               child: Column(
                 children: [
+                  
                   const SizedBox(height: 10),
 
-                  /// 🔁 ADDRESS LIST
+                  /// 🔁 PAYMENT LIST
                   Expanded(
                     child: ListView.builder(
                       itemCount: titles.length,
@@ -64,30 +72,21 @@ class _DlvryadrsState extends State<Dlvryadrs> {
                                 });
                               },
                               child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.home, color: Colors.pink),
+                                  /// ✅ ICON FROM LIST
+                                  Icon(
+                                    icons[index],
+                                    size: 50,
+                                    color: Colors.pink,
+                                  ),
+
                                   const SizedBox(width: 10),
 
-                                  /// TEXT + ADDRESS
+                                  /// TEXT
                                   Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          titles[index],
-                                          style: const TextStyle(fontSize: 18),
-                                        ),
-
-                                        /// 👇 SHOW UPDATED ADDRESS
-                                        if (addresses[index].isNotEmpty)
-                                          Text(
-                                            addresses[index],
-                                            style: const TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                      ],
+                                    child: Text(
+                                      titles[index],
+                                      style: const TextStyle(fontSize: 18),
                                     ),
                                   ),
 
@@ -110,21 +109,15 @@ class _DlvryadrsState extends State<Dlvryadrs> {
                     ),
                   ),
 
-                 
+                  /// BUTTON
                   GestureDetector(
-                    onTap: () async {
-                      final newAddress = await Navigator.push(
+                     onTap: () async {
+                     
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const AddAddress(),
-                        ),
+                            builder: (context) =>AddCard()),
                       );
-
-                      if (newAddress != null && selectedIndex != -1) {
-                        setState(() {
-                          addresses[selectedIndex] = newAddress;
-                        });
-                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -134,7 +127,7 @@ class _DlvryadrsState extends State<Dlvryadrs> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Text(
-                        "Add new Address",
+                        "Add New Card",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

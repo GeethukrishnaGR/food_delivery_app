@@ -1,5 +1,5 @@
-import 'package:bitenow/notificationset.dart';
-import 'package:bitenow/passwordset.dart';
+import 'package:bitenow/screens/notificationset.dart';
+import 'package:bitenow/screens/passwordset.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {

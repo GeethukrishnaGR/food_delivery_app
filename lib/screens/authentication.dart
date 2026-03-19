@@ -1,4 +1,4 @@
-import 'package:bitenow/onboardsc.dart';
+import 'package:bitenow/screens/onboardsc.dart';
 import 'package:flutter/material.dart';
 
 

@@ -1,6 +1,10 @@
-import 'package:bitenow/cartpage.dart';
-import 'package:bitenow/notificationpage.dart';
-import 'package:bitenow/profilepage.dart';
+
+import 'package:bitenow/model/foodmodel.dart';
+
+import 'package:bitenow/screens/cartpage.dart';
+import 'package:bitenow/screens/notificationpage.dart';
+import 'package:bitenow/screens/profilepage.dart';
+import 'package:bitenow/services/apiservice.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -15,6 +19,13 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
    PageController controller = PageController();
+   late Future<List<Food>> foodList;
+
+@override
+void initState() {
+  super.initState();
+  foodList = ApiService.fetchFoods();
+}
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;

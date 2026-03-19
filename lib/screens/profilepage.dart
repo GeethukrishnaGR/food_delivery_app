@@ -1,10 +1,10 @@
-import 'package:bitenow/contact.dart';
-import 'package:bitenow/dlvryadrs.dart';
-import 'package:bitenow/help.dart';
-import 'package:bitenow/myorders.dart';
-import 'package:bitenow/myprofile.dart';
-import 'package:bitenow/payment.dart';
-import 'package:bitenow/settings.dart';
+import 'package:bitenow/screens/contact.dart';
+import 'package:bitenow/screens/dlvryadrs.dart';
+import 'package:bitenow/screens/help.dart';
+import 'package:bitenow/screens/myorders.dart';
+import 'package:bitenow/screens/myprofile.dart';
+import 'package:bitenow/screens/payment.dart';
+import 'package:bitenow/screens/settings.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {

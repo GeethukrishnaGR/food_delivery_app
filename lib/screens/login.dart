@@ -1,13 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bitenow/newacc.dart';
-import 'package:bitenow/newpassword.dart';
 
+import 'package:bitenow/screens/finger.dart';
+import 'package:bitenow/screens/newacc.dart';
+import 'package:bitenow/screens/newpassword.dart';
+import 'package:bitenow/screens/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Signup extends StatelessWidget {
-  const Signup({super.key});
+class Login extends StatelessWidget {
+  const Login({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +26,9 @@ class Signup extends StatelessWidget {
             color: Colors.orange,
             alignment: Alignment.center,
             child: const Text(
-              "Hello!",
+              "Log In",
               style: TextStyle(
-                fontSize: 30,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -48,10 +50,9 @@ class Signup extends StatelessWidget {
                 children: [
 
                   const SizedBox(height: 20),
-
-                const Align(
+Align(
   alignment: Alignment.centerLeft,
-  child: Text(
+  child: const Text(
     "Welcome",
     style: TextStyle(
       fontSize: 24,
@@ -60,7 +61,15 @@ class Signup extends StatelessWidget {
     ),
   ),
 ),
-                  
+                  Text(
+                    "Enter your username and password to access your account and continue ordering your favorite food.", 
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                     
+                    ),
+                  ),
+
                   const SizedBox(height: 20),
   const Row(
                       children: [
@@ -85,18 +94,12 @@ class Signup extends StatelessWidget {
                     ),
                    
                   ),
-SizedBox(height: 15,),
-                 const Align(
-  alignment: Alignment.centerLeft,
-  child: Text(
-    "password",
-    style: TextStyle(
-      fontSize: 18,
-      color: Colors.black,
-      fontWeight: FontWeight.bold,
-    ),
-  ),
-),
+
+                  const SizedBox(height: 20),
+
+                 Text("Password",
+                            style: TextStyle(color: Colors.black,fontSize: 18,
+                            fontWeight: FontWeight.bold)),
                   Container(
                     height: size.height * 0.06,
                     padding: const EdgeInsets.all(8),
@@ -126,7 +129,7 @@ Align(
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>  Newpassword(),
+          builder: (context) => Newpassword(),
         ),
       );
     },
@@ -139,8 +142,7 @@ Align(
     ),
   ),
 ),
-
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
 
                   /// LOGIN BUTTON
                   GestureDetector(
@@ -152,7 +154,7 @@ Align(
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>NewAcc()),
+                            builder: (context) =>  NewAcc()),
                       );
                     },
                     child: Container(
@@ -183,13 +185,10 @@ Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: [
 
-   
-    const SizedBox(width: 20),
-
-    /// Fingerprint
+    /// Google
     Container(
-      height: 80,
-      width: 80,
+      height: 50,
+      width: 50,
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 252, 211, 211),
         shape: BoxShape.circle,
@@ -201,9 +200,66 @@ Row(
         ],
       ),
       child: const Icon(
-        Icons.fingerprint,
+        Icons.g_mobiledata,
+        size: 35,
+        color: Colors.red,
+      ),
+    ),
+
+    const SizedBox(width: 20),
+
+    /// Facebook
+    Container(
+      height: 50,
+      width: 50,
+      decoration: BoxDecoration(
+         color: const Color.fromARGB(255, 252, 211, 211),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade300,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: const Icon(
+        Icons.facebook,
         color: Colors.deepOrange,
-        size: 60,
+        size: 28,
+      ),
+    ),
+
+    const SizedBox(width: 20),
+
+    /// Fingerprint
+    GestureDetector(
+       onTap: () async {
+                     
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Finger()),
+                      );
+                    },
+      child: Container(
+        height: 50,
+        width: 50,
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 252, 211, 211),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade300,
+              blurRadius: 5,
+            ),
+          ],
+        ),
+        child: const Icon(
+          Icons.fingerprint,
+          color: Colors.deepOrange,
+          size: 28,
+        ),
       ),
     ),
 
@@ -213,16 +269,27 @@ const SizedBox(height: 20),
 
 Row(
   mainAxisAlignment: MainAxisAlignment.center,
-  children: const [
-    Text(
+  children: [
+    const Text(
       "Don't have an account? ",
       style: TextStyle(color: Colors.grey),
     ),
-    Text(
-      "Sign up",
-      style: TextStyle(
-        color: Colors.deepOrange,
-        fontWeight: FontWeight.bold,
+
+    GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>  Signup(), 
+          ),
+        );
+      },
+      child: const Text(
+        "Sign up",
+        style: TextStyle(
+          color: Colors.deepOrange,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     ),
   ],

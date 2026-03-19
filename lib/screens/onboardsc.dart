@@ -1,9 +1,9 @@
 // ignore_for_file: use_super_parameters
 
-import 'package:bitenow/intro1.dart';
-import 'package:bitenow/intro2.dart';
-import 'package:bitenow/intro3.dart';
-import 'package:bitenow/login.dart';
+import 'package:bitenow/screens/intro1.dart';
+import 'package:bitenow/screens/intro2.dart';
+import 'package:bitenow/screens/intro3.dart';
+import 'package:bitenow/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 

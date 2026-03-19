@@ -1,4 +1,4 @@
-import 'package:bitenow/homepage.dart';
+import 'package:bitenow/screens/homepage.dart';
 import 'package:flutter/material.dart';
 
 class Finger extends StatefulWidget {
