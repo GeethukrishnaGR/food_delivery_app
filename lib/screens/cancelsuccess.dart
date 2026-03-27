@@ -1,3 +1,4 @@
+import 'package:bitenow/screens/homepage.dart';
 import 'package:flutter/material.dart';
 
 class CancelSuccess extends StatelessWidget {
@@ -49,15 +50,19 @@ class CancelSuccess extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepOrange,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Back"),
-            ),
+         ElevatedButton(
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.deepOrange,
+  ),
+  onPressed: () {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const Homepage()),
+      (route) => false, 
+    );
+  },
+  child: const Text("Back"),
+),
           ],
         ),
       ),

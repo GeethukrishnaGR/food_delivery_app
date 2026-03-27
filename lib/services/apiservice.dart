@@ -1,20 +1,20 @@
-import 'dart:convert';
-import 'package:bitenow/model/foodmodel.dart';
-// ignore: depend_on_referenced_packages
-import 'package:http/http.dart' as http;
-
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ApiService {
-  static Future<List<Food>> fetchFoods() async {
-    final response = await http.get(
-      Uri.parse('https://fakestoreapi.com/products'),
-    );
+  final supabase = Supabase.instance.client;
 
-    if (response.statusCode == 200) {
-      List data = jsonDecode(response.body);
-      return data.map((e) => Food.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to load foods');
-    }
+  /// GET FOODS FROM SUPABASE
+  Future<List<Map<String, dynamic>>> fetchFoods() async {
+    final data = await supabase.from('foods').select();
+    return data;
+  }
+
+  /// ADD TO CART
+  Future<void> addToCart(Map<String, dynamic> food) async {
+    await supabase.from('cart').insert({
+      'name': food['name'],
+      'price': food['price'],
+      'image': food['image'],
+    });
   }
 }

@@ -1,3 +1,4 @@
+import 'package:bitenow/screens/fooddetailpage.dart';
 import 'package:bitenow/screens/deliverypage.dart';
 import 'package:bitenow/screens/payment.dart';
 import 'package:flutter/material.dart';
@@ -104,22 +105,33 @@ class _PaymentPageState extends State<PaymentPage> {
             const SizedBox(height: 10),
 
             /// 🔹 SAMPLE ORDER ITEMS
-            const ListTile(
-              title: Text("Burger"),
-              trailing: Text("₹120"),
-            ),
-            const ListTile(
-              title: Text("Pizza"),
-              trailing: Text("₹250"),
-            ),
-             Text(
-              "Total Amount: ₹$totalAmount",
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            
+           Column(
+  children: [
+
+    /// 🔥 LOOP YOUR ITEMS
+    ...cartItems.map((item) {
+      final price = item["price"] is int
+          ? item["price"]
+          : int.tryParse(item["price"].toString()) ?? 0;
+
+      return ListTile(
+        title: Text(item["name"] ?? ""),
+        trailing: Text("₹$price"),
+      );
+    }).toList(),
+
+    const SizedBox(height: 10),
+
+    /// 💰 TOTAL
+    Text(
+      "Total Amount: ₹$totalAmount",
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ],
+),
           const SizedBox(height: 10),
 
           const Divider(thickness: 1),

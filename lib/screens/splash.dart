@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bitenow/screens/authentication.dart';
+import 'package:bitenow/screens/onboardsc.dart';
 import 'package:flutter/material.dart';
 
 
@@ -24,7 +24,7 @@ class _SplashState extends State<Splash> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const Authentication()),
+      MaterialPageRoute(builder: (context) => const Onboardsc()),
     );
   }
 

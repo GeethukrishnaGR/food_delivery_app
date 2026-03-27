@@ -1,9 +1,41 @@
-import 'package:bitenow/screens/cancellorder.dart';
 import 'package:bitenow/screens/confirmoders.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class Myorders extends StatelessWidget {
-  const Myorders({super.key});
+class MyOrders extends StatefulWidget {
+  final String initialTab; // 🔥 ADD THIS
+final VoidCallback onConfirm;
+  const MyOrders({super.key, this.initialTab = 'Active', required this.onConfirm});
+
+  @override
+  State<MyOrders> createState() => _MyOrdersState();
+}
+
+class _MyOrdersState extends State<MyOrders> {
+  late String selectedTab;
+
+  final supabase = Supabase.instance.client;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedTab = widget.initialTab; // 🔥 SET INITIAL TAB
+  }
+
+  /// 🔹 FETCH ORDERS
+  Future<List<Map<String, dynamic>>> fetchOrders(String status) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return [];
+
+    final response = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', status.toLowerCase())
+        .order('id', ascending: true);
+
+    return List<Map<String, dynamic>>.from(response);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +45,7 @@ class Myorders extends StatelessWidget {
       body: Column(
         children: [
 
-          
+          /// 🔝 HEADER
           Container(
             height: size.height * 0.16,
             width: double.infinity,
@@ -29,118 +61,147 @@ class Myorders extends StatelessWidget {
             ),
           ),
 
+          /// 🔽 BODY
           Expanded(
-  child: Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(20),
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(40),
-        topRight: Radius.circular(40),
-      ),
-    ),
-    child: Column(
-      children: [
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-
-          
-            GestureDetector(
-               onTap: () async {
-                     
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>Confirmoders()),
-                      );
-                    },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.deepOrange,
-                  borderRadius: BorderRadius.circular(20),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
                 ),
-                child: const Text(
-                  "Active",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+              ),
+
+              child: Column(
+                children: [
+
+                  /// 🔹 TABS
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        
+                        child: buildTabButton("Active")),
+                      buildTabButton("Completed"),
+                      buildTabButton("Cancelled"),
+                    ],
                   ),
-                ),
+
+                  const SizedBox(height: 20),
+
+                  /// 🔹 DATA
+                  Expanded(
+                    child: FutureBuilder<List<Map<String, dynamic>>>(
+                      future: fetchOrders(selectedTab),
+                      builder: (context, snapshot) {
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Center(
+                              child: Text("No orders found."));
+                        }
+
+                        final orders = snapshot.data!;
+
+                       return ListView.builder(
+  itemCount: orders.length,
+  itemBuilder: (context, index) {
+    final order = orders[index]; // ✅ now accessible
+
+    return Card(
+      child: ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ConfirmOrder(
+                cartItems: [
+                  {
+                    "name": order['title'],
+                    "image": order['image_url'],
+                    "price": order['price'],
+                    "quantity": order['quantity'],
+                  }
+                ],
+                total: (order['price'] ?? 0) *
+                       (order['quantity'] ?? 1),
+
+                onConfirm: () async {
+                  print("Confirmed");
+                },
               ),
             ),
+          );
+        },
 
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 247, 199, 199),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                "Completed",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepOrange,
-                ),
-              ),
-            ),
+        leading: order['image_url'] != null
+            ? Image.network(
+                order['image_url'],
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              )
+            : const Icon(Icons.image),
 
-            
-            GestureDetector(
-                onTap: () async {
-                     
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>Cancellorder()),
-                      );
-                    },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 246, 195, 195),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  "Cancelled",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepOrange,
-                  ),
-                ),
-              ),
-            ),
+        title: Text(order['title'] ?? ""),
+        subtitle: Text("Qty: ${order['quantity']}"),
 
-          ],
+        trailing: Text(
+          "₹${order['price']}",
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-SizedBox(height: 90,),
-Icon(
- Icons.file_open,
-  size: 250,
-  color: const Color.fromARGB(255, 235, 222, 227),),
+      ),
+    );
+  },
+);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  SizedBox(height: 20,),
-  Text("You don't have any ",
-  style: TextStyle(color: Colors.pink,fontSize: 18,
-  fontWeight: FontWeight.bold),),
+  /// 🔹 TAB BUTTON
+  Widget buildTabButton(String label) {
+    final bool isSelected = selectedTab == label;
 
-   SizedBox(height: 5,),
-  Text(" active Orders at this time",
-  style: TextStyle(color: Colors.pink,fontSize: 18,
-   fontWeight: FontWeight.bold),),
-
-   SizedBox(height: 5,),
-  Text(" time",
-  style: TextStyle(color: Colors.pink,fontSize: 18,
-   fontWeight: FontWeight.bold
-  ),
-
-  ),
-  
-      ],
-    ),
-  ),
-)]));}}
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedTab = label;
+        });
+      },
+      child: Container(
+        padding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color:
+              isSelected ? Colors.deepOrange : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected
+                ? Colors.white
+                : Colors.deepOrange,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}

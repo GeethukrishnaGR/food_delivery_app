@@ -6,12 +6,14 @@ import 'package:bitenow/screens/myprofile.dart';
 import 'package:bitenow/screens/payment.dart';
 import 'package:bitenow/screens/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    debugPaintSizeEnabled = false;
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -66,15 +68,27 @@ class ProfilePage extends StatelessWidget {
   ],
 ),
  const SizedBox(height: 20),
+  Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Colors.deepOrange,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
+              ),
 
-   
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
      GestureDetector(
        onTap: () async {
                      
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>Myorders()),
+                            builder: (context) =>MyOrders(onConfirm: ()async {  print("Confirmed"); },)),
                       );
                     },
        child: Row(
@@ -190,7 +204,7 @@ const SizedBox(height: 15),
       const Text(
         "Delivery Address",
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 14,
           color: Colors.white,
           fontWeight: FontWeight.bold,
         ),
@@ -241,7 +255,7 @@ const SizedBox(height: 10),
            const Text(
         "Payment Methods",
         style: TextStyle(
-          fontSize: 18,
+          fontSize: 15,
           color: Colors.white,
           fontWeight: FontWeight.bold,
         ),
@@ -340,7 +354,7 @@ const SizedBox(height: 10),
       const Text(
         "Helps & FAQS",
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 18,
           color: Colors.white,
           fontWeight: FontWeight.bold,
         ),
@@ -489,7 +503,8 @@ const SizedBox(height: 20),
     ],
   ),
 )
-        ],
+        
+        ],))))]
       ),
     );
   }

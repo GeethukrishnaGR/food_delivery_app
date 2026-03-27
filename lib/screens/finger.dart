@@ -1,4 +1,4 @@
-import 'package:bitenow/screens/homepage.dart';
+import 'package:bitenow/screens/login.dart';
 import 'package:flutter/material.dart';
 
 class Finger extends StatefulWidget {
@@ -110,7 +110,7 @@ class _FingerState extends State<Finger> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>Homepage()),
+                            builder: (context) =>Login()),
                       );
                     },
                           child: Container(

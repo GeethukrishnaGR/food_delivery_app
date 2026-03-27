@@ -1,17 +1,165 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class Myprofile extends StatelessWidget {
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class Myprofile extends StatefulWidget {
   const Myprofile({super.key});
 
   @override
+  State<Myprofile> createState() => _MyprofileState();
+}
+
+class _MyprofileState extends State<Myprofile> {
+  final supabase = Supabase.instance.client;
+
+  final nameController = TextEditingController();
+  final dobController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+
+  String imageUrl = "";
+  File? imageFile;
+
+  final picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProfile();
+  }
+
+  /// 🔥 FETCH PROFILE
+  Future<void> fetchProfile() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    final data = await supabase
+        .from('profiles')
+        .select()
+        .eq('id', user.id)
+        .maybeSingle();
+
+    if (data != null) {
+      setState(() {
+        nameController.text = data['full_name'] ?? "";
+        dobController.text = data['dob'] ?? "";
+        emailController.text = data['email'] ?? user.email ?? "";
+        phoneController.text = data['phone'] ?? "";
+        imageUrl = data['image_url'] ?? "";
+      });
+    }
+  }
+
+  /// 🔥 PICK IMAGE OPTIONS
+  void showImagePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Camera"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(ImageSource.camera);
+                },
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text("Gallery"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// 🔥 PICK IMAGE
+  Future<void> pickImage(ImageSource source) async {
+
+  // 🔥 REQUEST PERMISSION FIRST
+  if (source == ImageSource.camera) {
+    await Permission.camera.request();
+  } else {
+    await Permission.photos.request();
+  }
+
+  final picked = await picker.pickImage(source: source);
+
+  if (picked == null) {
+    print("No image selected ❌");
+    return;
+  }
+
+  setState(() {
+    imageFile = File(picked.path);
+  });
+
+  print("Image selected ✅");
+
+  await uploadImage();
+}
+  /// 🔥 UPLOAD TO SUPABASE
+  Future<void> uploadImage() async {
+    final user = supabase.auth.currentUser;
+    if (user == null || imageFile == null) return;
+
+    final fileName = "${user.id}.jpg";
+
+    await supabase.storage
+        .from('profile-images')
+        .upload(fileName, imageFile!,
+            fileOptions: const FileOptions(upsert: true));
+
+    final url = supabase.storage
+        .from('profile-images')
+        .getPublicUrl(fileName);
+
+    setState(() {
+      imageUrl = url;
+    });
+  }
+
+  /// 🔥 UPDATE PROFILE
+  Future<void> updateProfile() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    await supabase.from('profiles').upsert({
+      'id': user.id,
+      'full_name': nameController.text,
+      'dob': dobController.text,
+      'email': emailController.text,
+      'phone': phoneController.text,
+      'image_url': imageUrl,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Profile Updated ✅")),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Column(
         children: [
 
-          
+          /// HEADER
           Container(
             height: size.height * 0.16,
             width: double.infinity,
@@ -20,178 +168,124 @@ class Myprofile extends StatelessWidget {
             child: const Text(
               "My Profile",
               style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
           ),
 
           Expanded(
-  child: Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(20),
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(40),
-        topRight: Radius.circular(40),
-      ),
-    ),
-    child: SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-
-          const SizedBox(height: 20),
-Center(
-  child: Stack(
-    children: [
-      /// PROFILE IMAGE
-      ClipRRect(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(25),
-          bottom: Radius.circular(25),
-        ),
-        child: Container(
-          height: 95,
-          width: 90,
-          color: Colors.grey.shade200,
-          child: Image.asset(
-            "assets/profile.jpg",
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-
-      /// CAMERA ICON (TOP RIGHT)
-      Positioned(
-       bottom: 5,
-        right: 5,
-        child: Container(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: Colors.deepOrange,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.camera_alt,
-            size: 18,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    ],
-  ),
-),
-          const Row(
-            children: [
-              SizedBox(width: 10),
-              Text(
-                "Full Name",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(40)),
               ),
-            ],
-          ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
 
-          Container(
-            height: size.height * 0.06,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 250, 226, 195),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            
-          ),
-  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-          const Row(
-            children: [
-              SizedBox(width: 10),
-              Text(
-                "Date of Birth",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+                    /// 🔥 IMAGE + CAMERA
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundImage: imageFile != null
+                              ? FileImage(imageFile!)
+                              : (imageUrl.isNotEmpty
+                                  ? NetworkImage(imageUrl)
+                                  : const AssetImage("assets/profile.jpg")
+                                      as ImageProvider),
+                        ),
 
-          Container(
-            height: size.height * 0.06,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 250, 226, 195),
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-         
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: showImagePicker,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                color: Colors.deepOrange,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
 
-         
-          const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-          const Row(
-            children: [
-              SizedBox(width: 10),
-              Text(
-                "Email",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+                    buildField("Full Name", nameController),
+                    const SizedBox(height: 15),
 
-          Container(
-            height: size.height * 0.06,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 250, 226, 195),
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
+                    buildField("Date of Birth", dobController),
+                    const SizedBox(height: 15),
 
-          const SizedBox(height: 20),
+                    buildField("Email", emailController),
+                    const SizedBox(height: 15),
 
-          const Row(
-            children: [
-              SizedBox(width: 10),
-              Text(
-                "Mobile Number",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+                    buildField("Mobile Number", phoneController),
 
-          Container(
-            height: size.height * 0.06,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 250, 226, 195),
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          SizedBox(height: 50,),
- Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color:Colors.deepOrange,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  "Update Profile",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                    const SizedBox(height: 30),
+
+                    GestureDetector(
+                      onTap: updateProfile,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.deepOrange,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Update Profile",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-        ]))))]));}}
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// FIELD
+  Widget buildField(String title, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 5),
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color.fromARGB(255, 250, 226, 195),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

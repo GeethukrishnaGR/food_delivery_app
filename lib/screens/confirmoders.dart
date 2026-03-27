@@ -1,263 +1,316 @@
+import 'package:bitenow/screens/cancellorder.dart';
+import 'package:bitenow/screens/fooddetailpage.dart' as widget;
 import 'package:bitenow/screens/ordersuccess.dart';
+import 'package:bitenow/screens/payment.dart';
 import 'package:flutter/material.dart';
 
-class Confirmoders extends StatefulWidget {
-  const Confirmoders({super.key});
+class ConfirmOrder extends StatefulWidget {
+  final List cartItems;
+  final double total;
+  final Future<void> Function() onConfirm;
+
+  const ConfirmOrder({
+    super.key,
+    required this.cartItems,
+    required this.total,
+    required this.onConfirm,
+  });
 
   @override
-  State<Confirmoders> createState() => _ConfirmordersState();
+  State<ConfirmOrder> createState() => _ConfirmOrderState();
 }
 
-class _ConfirmordersState extends State<Confirmoders> {
+class _ConfirmOrderState extends State<ConfirmOrder> {
+  double getPrice(dynamic price) {
+    if (price is int) return price.toDouble();
+    if (price is double) return price;
+    return double.tryParse(price.toString()) ?? 0;
+  }
 
-  /// 🔹 Dummy order list (later replace with API)
-  List<Map<String, dynamic>> orders = [
-    {
-      "name": "Chicken Burger",
-      "price": 120,
-    },
-    {
-      "name": "Pizza",
-      "price": 250,
-    }
-  ];
-
-  /// 🔹 Location
-  String location = "Kollam, Kerala";
+  double getSubtotal() {
+    return widget.cartItems.fold(
+      0.0,
+      (sum, item) =>
+          sum + (getPrice(item["price"]) * (item["quantity"] ?? 1)),
+    );}
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-
-    /// 🔹 Calculate total
-    double total = orders.fold(
-        0, (sum, item) => sum + item["price"]);
+     double subtotal = getSubtotal();
 
     return Scaffold(
-      body: Column(
-        children: [
+      backgroundColor: Colors.white,
 
-          /// HEADER
-          Container(
-            height: size.height * 0.16,
-            width: double.infinity,
-            color: Colors.orange,
-            alignment: Alignment.center,
-            child: const Text(
-              "Confirm Orders",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.deepOrange,
+        title: const Text("Confirm Order",
+        style: TextStyle(color: Colors.white),),
+        centerTitle: true,
+        elevation: 0,
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            /// 📍 ADDRESS
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 248, 196, 127),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.location_on, color: Colors.orange),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "778 Locust View Drive Oakland, CA",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
 
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
-                ),
-              ),
+            const SizedBox(height: 15),
 
-              /// 🔥 MAIN LOGIC HERE
-              child: orders.isEmpty
-                  ? _buildEmptyUI()
-                  : _buildOrdersUI(total),
-            ),
-          ),
-        ],
+            /// 🧾 ORDER LIST
+            const Text("Order Summary",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+
+            const SizedBox(height: 10),
+
+             Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(15),
+              itemCount: widget.cartItems.length,
+              itemBuilder: (context, index) {
+                final item = widget.cartItems[index];
+                final imageUrl = item["image"]?.toString() ?? "";
+
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+
+                        /// IMAGE
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: imageUrl.isNotEmpty
+                              ? Image.network(
+                                  imageUrl,
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder:
+                                      (context, error, stackTrace) {
+                                    return const Icon(Icons.broken_image,
+                                        color: Colors.white);
+                                  },
+                                )
+                              : const Icon(Icons.image,
+                                  color: Colors.white, size: 50),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        /// NAME + QTY
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item["name"] ?? "",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "Qty: ${item["quantity"]}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        /// PRICE
+                        Text(
+                          "₹${getPrice(item["price"]).toStringAsFixed(0)}",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),SizedBox(height: 10,),
+                    
+ Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+
+                        /// ❌ CANCEL ITEM BUTTON
+                       GestureDetector(
+  onTap: () {
+    setState(() {
+      widget.cartItems.removeAt(index);
+    });
+
+    /// 🔥 NAVIGATE TO CANCEL PAGE
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const Cancellorder(),
       ),
     );
-  }
-
-  /// ❌ EMPTY UI
-  Widget _buildEmptyUI() {
-    return Column(
-      children: const [
-        SizedBox(height: 90),
-        Icon(
-          Icons.file_open,
-          size: 250,
-          color: Color.fromARGB(255, 235, 222, 227),
-        ),
-        SizedBox(height: 20),
-        Text(
-          "You don't have any",
-          style: TextStyle(
-              color: Colors.pink,
-              fontSize: 18,
-              fontWeight: FontWeight.bold),
-        ),
-        Text(
-          "active orders at this time",
-          style: TextStyle(
-              color: Colors.pink,
-              fontSize: 18,
-              fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-
-  /// ✅ ORDERS UI
-  Widget _buildOrdersUI(double total) {
-    return Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-
-    /// 🔹 TITLE
-    const Text(
-      "Shipping Address",
+  },
+  child: Container(
+    padding: const EdgeInsets.symmetric(
+        horizontal: 12, vertical: 6),
+    decoration: BoxDecoration(
+      color: Colors.red,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: const Text(
+      "Cancel order",
       style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 18,
+        color: Colors.white,
+        fontSize: 12,
       ),
     ),
-
-    const SizedBox(height: 10),
-
-    /// 🔹 CONTAINER WITH LOCATION
-    Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 245, 240),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.orange.shade200),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.location_on, color: Colors.orange),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              location,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  
-
-       Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-
-    /// 🔹 LEFT TEXT
-    const Text(
-      "Order Summary",
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 18,
-      ),
-    ),
-
-    /// 🔹 RIGHT CONTAINER (EDIT)
-    Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 230, 220),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.deepOrange),
-      ),
-      child: const Text(
-        "Edit",
-        style: TextStyle(
-          color: Colors.deepOrange,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ),
-
-  ],
+  ),
 ),
 
-        /// 🔹 ORDER LIST
-        Expanded(
-          child: ListView.builder(
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              final item = orders[index];
+                        /// ➕➖ BUTTONS
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if (item["quantity"] > 1) {
+                                    item["quantity"]--;
+                                  } else {
+                                    widget.cartItems.removeAt(index);
+                                  }
+                                });
+                              },
+                              child: const Icon(Icons.remove_circle,
+                                  color: Colors.red),
+                            ),
 
-              return Card(
-                margin: const EdgeInsets.only(bottom: 10),
-                child: ListTile(
-                  title: Text(item["name"]),
-                  trailing: Text("₹${item["price"]}"),
-                ),
-              );
-            },
-          ),
-        ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                item["quantity"].toString(),
+                                style:
+                                    const TextStyle(color: Colors.black),
+                              ),
+                            ),
 
-        /// 🔹 TOTAL
-        Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "Total Amount",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "₹$total",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  item["quantity"]++;
+                                });
+                              },
+                              child: const Icon(Icons.add_circle,
+                                  color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
 
-        const SizedBox(height: 10),
-
-        /// 🔹 CANCEL BUTTON
-        Center(
-          child: GestureDetector(
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OrderSuccess(),
-                ),
-              );
-            },
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.deepOrange,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                "Order Placed",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                    const SizedBox(height: 10),
+                    const Divider(color: Color.fromARGB(255, 253, 137, 137)),
+                  ],
+                );
+              },
             ),
+          ),
+
+          /// 💰 BILL SECTION
+          Column(
+            children: [
+          
+              billRow("Subtotal", subtotal),
+              billRow("Tax", 5),
+              billRow("Delivery", 3),
+          
+              const Divider(color: Color.fromARGB(255, 248, 111, 111)),
+          
+              billRow("Total", subtotal + 8, isBold: true),
+          
+              const SizedBox(height: 20),
+          
+              /// ✅ CONFIRM BUTTON
+              GestureDetector(
+              onTap: () async {
+  await widget.onConfirm(); // place order
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const Payment(),
+    ),
+  );
+},
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Place Order",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+                    ],
+                  ),
+   ])) );
+  }
+
+  /// 💰 BILL ROW
+Widget billRow(String title, double amount, {bool isBold = false}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight:
+                isBold ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+        Text(
+          "₹${amount.toStringAsFixed(0)}",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight:
+                isBold ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 }

@@ -1,30 +1,54 @@
 
-import 'package:bitenow/model/foodmodel.dart';
 
+import 'package:bitenow/recommendation.dart';
+import 'package:bitenow/screens/bestseller.dart';
+import 'package:bitenow/screens/desserts.dart';
+import 'package:bitenow/screens/drinkss.dart';
+import 'package:bitenow/screens/fooddetailpage.dart';
+import 'package:bitenow/screens/mealss.dart';
 import 'package:bitenow/screens/cartpage.dart';
+
 import 'package:bitenow/screens/notificationpage.dart';
 import 'package:bitenow/screens/profilepage.dart';
-import 'package:bitenow/services/apiservice.dart';
+
+import 'package:bitenow/services/supaservice.dart';
+import 'package:bitenow/screens/viewall.dart';
+import 'package:bitenow/screens/snackss.dart';
+import 'package:bitenow/screens/vegans.dart';
+import 'package:bitenow/widget/categoryitem.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+  final List<Map<String, dynamic>>? filteredData;
+
+  const Homepage({super.key, this.filteredData});
   
 
   @override
   State<Homepage> createState() => _HomepageState();
-  
 }
 
 class _HomepageState extends State<Homepage> {
    PageController controller = PageController();
-   late Future<List<Food>> foodList;
+  final SupabaseService service = SupabaseService();
+Future<List<Map<String, dynamic>>>? foodList;
+String selectedCategory = "";
+List<Map<String, dynamic>> selectedSnacks = [];
+
 
 @override
 void initState() {
   super.initState();
-  foodList = ApiService.fetchFoods();
+
+  if (widget.filteredData != null && widget.filteredData!.isNotEmpty) {
+    print("USING FILTERED DATA");
+    foodList = Future.value(widget.filteredData);
+    
+  } else {
+    print("USING DEFAULT FOODS");
+    foodList = service.getFoods();
+  }
 }
   @override
   Widget build(BuildContext context) {
@@ -89,34 +113,33 @@ void initState() {
                     const SizedBox(width: 10),
 
                     GestureDetector(
-                       onTap: () {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: "Cart",
-      transitionDuration: const Duration(milliseconds: 300),
-    pageBuilder: (context, animation, secondaryAnimation) {
-  return Align(
-    alignment: Alignment.centerRight,
-    child: Container(
-      width: MediaQuery.of(context).size.width * 0.7,
-      height: double.infinity,
-      color: Colors.deepOrange,
-      child:Cartpage(),
-    ),
+                      onTap: () {
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: "Cart",
+    transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (context, a1, a2) {
+      return Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8, // Fixed size call
+          color: Colors.deepOrange, // Background color for your cart
+          child: CartPage(), // <--- PASS DATA HERE
+        ),
+      );
+    },
+    transitionBuilder: (context, anim, sec, child) {
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(1, 0),
+          end: const Offset(0, 0),
+        ).animate(anim),
+        child: child,
+      );
+    },
   );
 },
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(1, 0),
-            end: const Offset(0, 0),
-          ).animate(animation),
-          child: child,
-        );
-      },
-    );
-  },
                       child: const CircleAvatar(
                         radius: 15,
                         backgroundColor: Colors.white,
@@ -259,16 +282,88 @@ GestureDetector(
                   children: [
 
                     /// CATEGORY ICONS
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        CategoryItem(Icons.fastfood, "Snacks"),
-                        CategoryItem(Icons.restaurant, "Meals"),
-                        CategoryItem(Icons.eco, "Vegan"),
-                        CategoryItem(Icons.icecream, "Dessert"),
-                        CategoryItem(Icons.local_drink, "Drinks"),
-                      ],
-                    ),
+                 Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+
+    GestureDetector(
+    onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Snackss(), // category page
+      ),
+    );
+  },
+      child: CategoryItem(
+        Icons.fastfood,
+        "Snacks",
+        isSelected: selectedCategory == "Snacks",
+      ),
+    ),
+
+     GestureDetector(
+    onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Mealss(), // category page
+      ),
+    );
+  },
+      child: CategoryItem(
+        Icons.restaurant,
+        "Meals",
+        isSelected: selectedCategory == "Meals",
+      ),
+    ),
+    GestureDetector(
+    onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Vegans(), // category page
+      ),
+    );
+  },
+      child: CategoryItem(
+        Icons.eco,
+        "Vegan",
+        isSelected: selectedCategory == "vegan",
+      ),
+    ),
+
+    GestureDetector(
+      onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => Desserts()),
+  );
+},
+      child: CategoryItem(
+        Icons.icecream,
+        "Dessert",
+        isSelected: selectedCategory == "Dessert",
+      ),
+    ),
+
+    GestureDetector(
+      onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => Drinkss()),
+  );
+},
+      child: CategoryItem(
+        Icons.local_drink,
+        "Drinks",
+        isSelected: selectedCategory == "Drinks",
+      ),
+    ),
+
+  ],
+),
+
 
                     const SizedBox(height: 10),
 
@@ -276,44 +371,171 @@ GestureDetector(
                       color: Color.fromARGB(255, 245, 135, 172),
                       thickness: 1.5,
                     ),
+                    
 
                     const SizedBox(height: 10),
 
                     /// BEST SELLER TITLE
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          "Best Seller",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                      children: [
+                        GestureDetector(
+                           onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const Bestseller(),
+      ),
+    );
+  },
+                          child: const Text(
+                            "Best Seller",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        Text(
-                          "View All >",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.deepOrange,
-                              fontWeight: FontWeight.w500),
-                        ),
+                        GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ViewAll(),
+      ),
+    );
+  },
+  child: const Text(
+    "View All >",
+    style: TextStyle(
+      fontSize: 16,
+      color: Colors.deepOrange,
+      fontWeight: FontWeight.w500,
+    ),
+  ),
+),
                       ],
                     ),
 
                     const SizedBox(height: 10),
 
-                    /// FOOD SCROLL
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: const [
-                          FoodCard("assets/chicken-skewers-.jpg", "\$103"),
-                          FoodCard(
-                              "assets/front-view-fresh-carrot-salad-grated-salad-with-walnuts-garlic-dark-desk-diet-salad-color-nut-health.jpg",
-                              "\$120"),
-                          FoodCard("assets/roasted-lamb.jpg", "\$154"),
-                          FoodCard("assets/pre-prepared-food-.jpg", "\$80"),
-                        ],
-                      ),
+                /// FOOD SCROLL (FINAL WORKING)
+if (foodList != null)
+  SizedBox(
+    height: 130,
+    child: FutureBuilder<List<Map<String, dynamic>>>(
+  future: foodList,
+  builder: (context, snapshot) {
+
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (snapshot.hasError) {
+      return const Center(child: Text("Error loading data"));
+    }
+
+    final foods = snapshot.data ?? [];
+
+    if (foods.isEmpty) {
+      return const Center(child: Text("No items found"));
+    }
+
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: foods.length,
+      itemBuilder: (context, index) {
+        final food = foods[index];
+
+        return Container(
+          margin: const EdgeInsets.only(right: 15),
+          child: Stack(
+            children: [
+
+              /// IMAGE CLICK
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FoodDetailPage(food: food),
                     ),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                    food['image_url'] ?? "",
+                    height: 120,
+                    width: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Image.asset(
+                      "assets/burger.jpg",
+                      height: 120,
+                      width: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+
+              /// ❤️ FAVORITE
+              Positioned(
+                top: 5,
+                right: 5,
+                child: GestureDetector(
+                  onTap: () async {
+                    final newValue = !(food['is_favorite'] ?? false);
+
+                    await service.toggleFavorite(food['id'], newValue);
+
+                    setState(() {
+                      food['is_favorite'] = newValue;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      (food['is_favorite'] ?? false)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: Colors.red,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ),
+
+              /// PRICE
+              Positioned(
+                bottom: 5,
+                right: 5,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 6, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    "₹${food['food_price'] ?? 0}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  },
+)
+  ),
 
                     const SizedBox(height: 20),
 
@@ -359,203 +581,173 @@ GestureDetector(
       ),
 const SizedBox(height: 10),
 
-Align(
-  alignment: Alignment.centerLeft,
-  child: Text(
-    "Recommend",
-    style: TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
+GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const Recommendation(),
+      ),
+    );
+  },
+  child: Align(
+    alignment: Alignment.centerLeft,
+    child: Text(
+      "Recommend",
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
     ),
   ),
 ),
 SingleChildScrollView(
   scrollDirection: Axis.horizontal,
-  child: Row(
-    children: [
+  child: FutureBuilder<List<Map<String, dynamic>>>(
+    future: SupabaseService().getMeals(), // 🔥 your supabase function
+    builder: (context, snapshot) {
 
-      const SizedBox(width: 10),
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Padding(
+          padding: EdgeInsets.all(20),
+          child: CircularProgressIndicator(),
+        );
+      }
 
-      Stack(
+      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(20),
+          child: Text("No food found"),
+        );
+      }
+
+      final foods = snapshot.data!;
+
+      return Row(
         children: [
 
-          /// IMAGE
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(20),
-              bottom: Radius.circular(20),
-            ),
-            child: Image.asset(
-              "assets/chicken-skewers-.jpg",
-              height: 170,
-              width: 150,
-              fit: BoxFit.cover,
-            ),
-          ),
+          const SizedBox(width: 10),
 
-          
-         Positioned(
-  top: 8,
-  left: 8,
-  child: Row(
-    children: [
+          ...foods.map((food) {
 
-      /// ⭐ RATING
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.star, color: Colors.orange, size: 14),
-            SizedBox(width: 3),
-            Text(
-              "4.5",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
+            /// ✅ FIX PRICE TYPE ERROR
+            final price = food['food_price'] is int
+                ? food['food_price']
+                : int.tryParse(food['food_price'].toString()) ?? 0;
 
-      const SizedBox(width: 6),
+            final imageUrl = food['image_url'] ?? '';
 
-      /// ❤️ LIKE BUTTON
-      Container(
-        padding: const EdgeInsets.all(4),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(
-          Icons.favorite_border,
-          color: Colors.red,
-          size: 16,
-        ),
-      ),
+            return Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: GestureDetector(
 
-    ],
-  ),
-),
-         
-          Positioned(
-            bottom: 5,
-            right: 5,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-              decoration: BoxDecoration(
-                color: Colors.orange,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                "\$103.0",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+                
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FoodDetailPage(food: food),
+                    ),
+                  );
+                },
+
+                child: Stack(
+                  children: [
+
+                    /// IMAGE
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: imageUrl.isNotEmpty
+                          ? Image.network(
+                              imageUrl,
+                              height: 170,
+                              width: 150,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              height: 170,
+                              width: 150,
+                              color: Colors.grey.shade300,
+                              child: const Icon(Icons.broken_image),
+                            ),
+                    ),
+
+                    /// ⭐ RATING + ❤️
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Row(
+                        children: [
+
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.star, color: Colors.orange, size: 14),
+                                SizedBox(width: 3),
+                                Text(
+                                  "4.5",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(width: 6),
+
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.favorite_border,
+                              color: Colors.red,
+                              size: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    /// 💰 PRICE
+                    Positioned(
+                      bottom: 5,
+                      right: 5,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          "₹$price",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  ],
                 ),
               ),
-            ),
-          ),
+            );
+          }).toList(),
 
         ],
-      ),
-      const SizedBox(width: 10),
-
-      Stack(
-        children: [
-
-          /// IMAGE
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(20),
-              bottom: Radius.circular(20),
-            ),
-            child: Image.asset(
-              "assets/burger.jpg",
-              height: 170,
-              width: 150,
-              fit: BoxFit.cover,
-            ),
-          ),
-
-         Positioned(
-  top: 8,
-  left: 8,
-  child: Row(
-    children: [
-
-      /// ⭐ RATING
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.star, color: Colors.orange, size: 14),
-            SizedBox(width: 3),
-            Text(
-              "4.5",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-
-      const SizedBox(width: 6),
-
-      /// ❤️ LIKE BUTTON
-      Container(
-        padding: const EdgeInsets.all(4),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(
-          Icons.favorite_border,
-          color: Colors.red,
-          size: 16,
-        ),
-      ),
-
-    ],
-  ),
-),
-         
-          Positioned(
-            bottom: 5,
-            right: 5,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-              decoration: BoxDecoration(
-                color: Colors.orange,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                "\$83.0",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-
-        ],
-      ),
-
-
-    ],
+      );
+    },
   ),
 )
                   ],
@@ -572,30 +764,7 @@ SingleChildScrollView(
 }
 
 /// CATEGORY WIDGET
-class CategoryItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
 
-  const CategoryItem(this.icon, this.title, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: const BoxDecoration(
-            color: Color.fromARGB(255, 252, 163, 193),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: Colors.white),
-        ),
-        const SizedBox(height: 5),
-        Text(title),
-      ],
-    );
-  }
-}
 
 /// FOOD CARD
 class FoodCard extends StatelessWidget {
