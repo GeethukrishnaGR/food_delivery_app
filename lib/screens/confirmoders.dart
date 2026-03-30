@@ -1,6 +1,5 @@
 import 'package:bitenow/screens/cancellorder.dart';
 import 'package:bitenow/screens/fooddetailpage.dart' as widget;
-import 'package:bitenow/screens/ordersuccess.dart';
 import 'package:bitenow/screens/payment.dart';
 import 'package:flutter/material.dart';
 

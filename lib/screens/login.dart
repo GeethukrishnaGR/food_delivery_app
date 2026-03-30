@@ -2,6 +2,7 @@
 
 import 'package:bitenow/screens/dashboard.dart';
 import 'package:bitenow/screens/finger.dart';
+import 'package:bitenow/screens/newacc.dart';
 import 'package:bitenow/screens/newpassword.dart';
 import 'package:bitenow/screens/signup.dart';
 import 'package:bitenow/services/supaservice.dart';
@@ -228,7 +229,7 @@ bool success = await service.loginUser(
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => const Signup()),
+                                  builder: (_) => const NewAcc()),
                             );
                           },
                           child: const Text(

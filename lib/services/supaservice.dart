@@ -26,6 +26,7 @@ class SupabaseService {
 }
 
 
+
   /// ADD TO CART
  Future<void> addToCart(Map item) async {
   final supabase = Supabase.instance.client;
@@ -44,64 +45,38 @@ class SupabaseService {
   print("Saved: ${item["image_url"]}");
 }
 
- Future<List<Map<String, dynamic>>> getSnacks() async {
+ Future<List<Map<String, dynamic>>> getByTable(String table) async {
   final response = await supabase
-      .from('snacks') // ✅ YOUR TABLE NAME
+      .from(table)
       .select();
 
   return List<Map<String, dynamic>>.from(response);
 }
- Future<List<Map<String, dynamic>>> getMeals() async {
-  final response = await supabase
-      .from('meals') // ✅ YOUR TABLE NAME
-      .select();
+Future<List> getFavorites() async {
+  final user = Supabase.instance.client.auth.currentUser;
 
-  return List<Map<String, dynamic>>.from(response);
-}
-Future<List<Map<String, dynamic>>> getVegans() async {
-  final response = await supabase
-      .from('vegans') // ✅ YOUR TABLE NAME
-      .select();
-
-  return List<Map<String, dynamic>>.from(response);
-}
-Future<List<Map<String, dynamic>>> getDessert() async {
-  final response = await supabase
-      .from('dessert') // ✅ YOUR TABLE NAME
-      .select();
-
-  return List<Map<String, dynamic>>.from(response);
-}
-Future<List<Map<String, dynamic>>> getDrinks() async {
-  final response = await supabase
-      .from('drinks') // ✅ YOUR TABLE NAME
-      .select();
-
-  return List<Map<String, dynamic>>.from(response);
-}
-
-/// ❤️ GET FAVORITES
-Future<List<Map<String, dynamic>>> getFavorites() async {
-  final data = await supabase
-      .from('foods')
+  final response = await Supabase.instance.client
+      .from('favorites')
       .select()
-      .eq('is_favorite', true);
+      .eq('user_id', user!.id);
 
-  
-  return List<Map<String, dynamic>>.from(data);
+  return response;
 }
-Future<void> addToFavorites(Map<String, dynamic> food) async {
+
+   Future<void> addToFavorites(Map food) async {
     final user = supabase.auth.currentUser;
     if (user == null) return;
 
     await supabase.from('favorites').insert({
       'user_id': user.id,
-      'item_id': food['id'], // Ensure your 'foods' table has an 'id'
-      'item_name': food['food_name'] ?? food['name'],
+      'item_id': food['id'],
+      'item_name': food['food_name'],
+      'image_url': food['image_url'],
+      'food_price': food['food_price'],
     });
   }
 
-  /// ❤️ REMOVE FROM FAVORITES
+  /// REMOVE FROM FAVORITES
   Future<void> removeFromFavorites(int itemId) async {
     final user = supabase.auth.currentUser;
     if (user == null) return;
@@ -113,6 +88,19 @@ Future<void> addToFavorites(Map<String, dynamic> food) async {
         .eq('item_id', itemId);
   }
 
+  /// CHECK FAVORITE
+  Future<bool> isFavorite(int itemId) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return false;
+
+    final data = await supabase
+        .from('favorites')
+        .select()
+        .eq('user_id', user.id)
+        .eq('item_id', itemId);
+
+    return data.isNotEmpty;
+  }
 Future<bool> loginUser(String email, String password) async {
     try {
       final res = await supabase.auth.signInWithPassword(
@@ -129,12 +117,6 @@ Future<bool> loginUser(String email, String password) async {
   }
  
 
-  // ✅ KEEP THIS ONLY ONCE
-  Future<void> toggleFavorite(int id, bool value) async {
-    await supabase
-        .from('foods')
-        .update({'is_favorite': value})
-        .eq('id', id);
-  }
+  
   
 }

@@ -1,9 +1,16 @@
 import 'dart:io';
+
+import 'package:bitenow/themes/appcolors.dart';
+import 'package:bitenow/widget/profilefield.dart';
+import 'package:bitenow/widget/profileheader.dart';
+
+import 'package:bitenow/widget/profileimage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+
 
 class Myprofile extends StatefulWidget {
   const Myprofile({super.key});
@@ -13,6 +20,7 @@ class Myprofile extends StatefulWidget {
 }
 
 class _MyprofileState extends State<Myprofile> {
+
   final supabase = Supabase.instance.client;
 
   final nameController = TextEditingController();
@@ -31,7 +39,6 @@ class _MyprofileState extends State<Myprofile> {
     fetchProfile();
   }
 
-  /// 🔥 FETCH PROFILE
   Future<void> fetchProfile() async {
     final user = supabase.auth.currentUser;
     if (user == null) return;
@@ -46,72 +53,57 @@ class _MyprofileState extends State<Myprofile> {
       setState(() {
         nameController.text = data['full_name'] ?? "";
         dobController.text = data['dob'] ?? "";
-        emailController.text = data['email'] ?? user.email ?? "";
+        emailController.text = data['email'] ?? "";
         phoneController.text = data['phone'] ?? "";
         imageUrl = data['image_url'] ?? "";
       });
     }
   }
 
-  /// 🔥 PICK IMAGE OPTIONS
   void showImagePicker() {
     showModalBottomSheet(
       context: context,
       builder: (_) {
-        return SafeArea(
-          child: Wrap(
-            children: [
+        return Wrap(
+          children: [
 
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text("Camera"),
-                onTap: () {
-                  Navigator.pop(context);
-                  pickImage(ImageSource.camera);
-                },
-              ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Camera"),
+              onTap: () {
+                Navigator.pop(context);
+                pickImage(ImageSource.camera);
+              },
+            ),
 
-              ListTile(
-                leading: const Icon(Icons.photo),
-                title: const Text("Gallery"),
-                onTap: () {
-                  Navigator.pop(context);
-                  pickImage(ImageSource.gallery);
-                },
-              ),
-            ],
-          ),
+            ListTile(
+              leading: const Icon(Icons.photo),
+              title: const Text("Gallery"),
+              onTap: () {
+                Navigator.pop(context);
+                pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
         );
       },
     );
   }
 
-  /// 🔥 PICK IMAGE
   Future<void> pickImage(ImageSource source) async {
-
-  // 🔥 REQUEST PERMISSION FIRST
-  if (source == ImageSource.camera) {
     await Permission.camera.request();
-  } else {
-    await Permission.photos.request();
+
+    final picked = await picker.pickImage(source: source);
+
+    if (picked == null) return;
+
+    setState(() {
+      imageFile = File(picked.path);
+    });
+
+    await uploadImage();
   }
 
-  final picked = await picker.pickImage(source: source);
-
-  if (picked == null) {
-    print("No image selected ❌");
-    return;
-  }
-
-  setState(() {
-    imageFile = File(picked.path);
-  });
-
-  print("Image selected ✅");
-
-  await uploadImage();
-}
-  /// 🔥 UPLOAD TO SUPABASE
   Future<void> uploadImage() async {
     final user = supabase.auth.currentUser;
     if (user == null || imageFile == null) return;
@@ -132,7 +124,6 @@ class _MyprofileState extends State<Myprofile> {
     });
   }
 
-  /// 🔥 UPDATE PROFILE
   Future<void> updateProfile() async {
     final user = supabase.auth.currentUser;
     if (user == null) return;
@@ -153,106 +144,69 @@ class _MyprofileState extends State<Myprofile> {
 
   @override
   Widget build(BuildContext context) {
+
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Column(
         children: [
 
-          /// HEADER
-          Container(
-            height: size.height * 0.16,
-            width: double.infinity,
-            color: Colors.orange,
-            alignment: Alignment.center,
-            child: const Text(
-              "My Profile",
-              style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-          ),
+          const ProfileHeader(name: '', email: '',),
 
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(40)),
+              padding: EdgeInsets.all(size.width * 0.05),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(40),
+                ),
               ),
+
               child: SingleChildScrollView(
                 child: Column(
                   children: [
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: size.height * 0.02),
 
-                    /// 🔥 IMAGE + CAMERA
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 45,
-                          backgroundImage: imageFile != null
-                              ? FileImage(imageFile!)
-                              : (imageUrl.isNotEmpty
-                                  ? NetworkImage(imageUrl)
-                                  : const AssetImage("assets/profile.jpg")
-                                      as ImageProvider),
-                        ),
-
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: showImagePicker,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: const BoxDecoration(
-                                color: Colors.deepOrange,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.camera_alt,
-                                size: 18,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    ProfileImageWidget(
+                      imageFile: imageFile,
+                      imageUrl: imageUrl,
+                      onTap: showImagePicker,
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: size.height * 0.03),
 
-                    buildField("Full Name", nameController),
-                    const SizedBox(height: 15),
+                    ProfileField(title: "Full Name", controller: nameController),
+                    SizedBox(height: size.height * 0.02),
 
-                    buildField("Date of Birth", dobController),
-                    const SizedBox(height: 15),
+                    ProfileField(title: "Date of Birth", controller: dobController),
+                    SizedBox(height: size.height * 0.02),
 
-                    buildField("Email", emailController),
-                    const SizedBox(height: 15),
+                    ProfileField(title: "Email", controller: emailController),
+                    SizedBox(height: size.height * 0.02),
 
-                    buildField("Mobile Number", phoneController),
+                    ProfileField(title: "Mobile Number", controller: phoneController),
 
-                    const SizedBox(height: 30),
+                    SizedBox(height: size.height * 0.04),
 
                     GestureDetector(
                       onTap: updateProfile,
                       child: Container(
+                        
                         width: double.infinity,
-                        padding: const EdgeInsets.all(15),
+                        padding: EdgeInsets.all(size.height * 0.02),
                         decoration: BoxDecoration(
-                          color: Colors.deepOrange,
+                          color: AppColors.accent,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Center(
                           child: Text(
                             "Update Profile",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.deepOrange,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -264,28 +218,6 @@ class _MyprofileState extends State<Myprofile> {
           ),
         ],
       ),
-    );
-  }
-
-  /// FIELD
-  Widget buildField(String title, TextEditingController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title,
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 5),
-        TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: const Color.fromARGB(255, 250, 226, 195),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

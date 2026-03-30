@@ -1,3 +1,6 @@
+import 'package:bitenow/screens/confirmoders.dart';
+import 'package:bitenow/screens/ordersuccess.dart';
+import 'package:bitenow/screens/payment.dart';
 import 'package:flutter/material.dart';
 
 class AddCard extends StatefulWidget {
@@ -123,27 +126,35 @@ class _AddCardState extends State<AddCard> {
                   backgroundColor: Colors.deepOrange,
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                onPressed: () {
+              onPressed: () {
 
-                  /// ✅ SIMPLE VALIDATION
-                  if (cardNumberController.text.length < 16 ||
-                      cvvController.text.length < 3) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Enter valid card details"),
-                      ),
-                    );
-                    return;
-                  }
+  /// ✅ VALIDATION
+  if (cardNumberController.text.length < 10 ||
+      cvvController.text.length < 3) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Enter valid card details"),
+      ),
+    );
+    return;
+  }
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Card Saved Successfully"),
-                    ),
-                  );
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text("Card Saved Successfully"),
+    ),
+  );
 
-                  Navigator.pop(context);
-                },
+  /// ✅ NAVIGATE TO CONFIRM ORDER PAGE
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => OrderSuccess(
+        // pass data if needed
+      ),
+    ),
+  );
+},
                 child: const Text("Save Card"),
               ),
             ),

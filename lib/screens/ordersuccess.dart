@@ -1,3 +1,4 @@
+import 'package:bitenow/screens/homepage.dart';
 import 'package:bitenow/screens/trackorder.dart';
 import 'package:flutter/material.dart';
 
@@ -75,7 +76,14 @@ class OrderSuccess extends StatelessWidget {
 
                         GestureDetector(
               onTap: () {
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Homepage(
+        // pass data if needed
+      ),
+    ),
+  );
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(

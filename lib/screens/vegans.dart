@@ -1,6 +1,4 @@
-import 'package:bitenow/screens/desserts.dart';
-import 'package:bitenow/screens/drinkss.dart';
-import 'package:bitenow/screens/mealss.dart';
+
 import 'package:bitenow/screens/snackss.dart';
 import 'package:flutter/material.dart';
 import 'package:bitenow/services/supaservice.dart';
@@ -112,16 +110,7 @@ Container(
 
     /// 🔥 MEALS
     GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategory = "Meals";
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => Mealss()),
-        );
-      },
+   
       child: CategoryItem(
         Icons.restaurant,
         "Meals",
@@ -150,16 +139,7 @@ Container(
 
     /// 🔥 DESSERT
     GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategory = "Dessert";
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => Desserts()),
-        );
-      },
+    
       child: CategoryItem(
         Icons.icecream,
         "Dessert",
@@ -169,16 +149,7 @@ Container(
 
     /// 🔥 DRINKS
     GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategory = "Drinks";
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => Drinkss()),
-        );
-      },
+      
       child: CategoryItem(
         Icons.local_drink,
         "Drinks",
@@ -199,7 +170,7 @@ Container(
 
               /// 🔥 SUPABASE DATA
               child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: service.getVegans(),
+                 future: service.getByTable(""),
                 builder: (context, snapshot) {
 
                   if (snapshot.connectionState ==

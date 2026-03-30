@@ -1,12 +1,11 @@
-import 'package:bitenow/screens/desserts.dart';
-import 'package:bitenow/screens/drinkss.dart';
-import 'package:bitenow/screens/mealss.dart';
-import 'package:bitenow/screens/vegans.dart';
+import 'package:bitenow/provider/categoryprovider.dart';
+
+import 'package:bitenow/widget/buildcategory.dart';
 import 'package:flutter/material.dart';
 import 'package:bitenow/services/supaservice.dart';
 import 'package:bitenow/screens/fooddetailpage.dart';
 
-import 'package:bitenow/widget/categoryitem.dart';
+import 'package:provider/provider.dart';
 
 class Snackss extends StatefulWidget {
   const Snackss({super.key});
@@ -17,6 +16,7 @@ class Snackss extends StatefulWidget {
 
 class _SnackssState extends State<Snackss> {
   final SupabaseService service = SupabaseService();
+  CategoryProvider get provider => Provider.of<CategoryProvider>(context);
 String selectedCategory = ""; 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +39,10 @@ Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         child: Row(
           children: [
-            /// Back Arrow
+           
             GestureDetector(
               onTap: () {
-                Navigator.pop(context); // Goes back to previous page (Homepage)
+                Navigator.pop(context); 
               },
               child: const Icon(
                 Icons.arrow_back,
@@ -52,7 +52,7 @@ Container(
             ),
             const SizedBox(width: 10),
             const Text(
-              "Snacks",
+              "Filter",
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
@@ -87,104 +87,16 @@ Container(
           
  const SizedBox(height: 15),
 
-             Row(
-  mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
   children: [
 
-    /// 🔥 SNACKS
-    GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategory = "Snacks";
-        });
+    buildCategory(Icons.fastfood, "Snacks", provider),
+    buildCategory(Icons.restaurant, "Meals", provider),
+    buildCategory(Icons.eco, "Vegan", provider),
+    buildCategory(Icons.icecream, "Dessert", provider),
+    buildCategory(Icons.local_drink, "Drinks", provider),
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => Snackss()),
-        );
-      },
-      child: CategoryItem(
-        Icons.fastfood,
-        "Snacks",
-        isSelected: selectedCategory == "Snacks",
-      ),
-    ),
-
-    /// 🔥 MEALS
-    GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategory = "Meals";
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => Mealss()),
-        );
-      },
-      child: CategoryItem(
-        Icons.restaurant,
-        "Meals",
-        isSelected: selectedCategory == "Meals",
-      ),
-    ),
-
-    /// 🔥 VEGAN
-    GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategory = "Vegan"; // ⚠️ FIX CAPITAL V
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => Vegans()),
-        );
-      },
-      child: CategoryItem(
-        Icons.eco,
-        "Vegan",
-        isSelected: selectedCategory == "Vegan",
-      ),
-    ),
-
-    /// 🔥 DESSERT
-    GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategory = "Dessert";
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => Desserts()),
-        );
-      },
-      child: CategoryItem(
-        Icons.icecream,
-        "Dessert",
-        isSelected: selectedCategory == "Dessert",
-      ),
-    ),
-
-    /// 🔥 DRINKS
-    GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategory = "Drinks";
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => Drinkss()),
-        );
-      },
-      child: CategoryItem(
-        Icons.local_drink,
-        "Drinks",
-        isSelected: selectedCategory == "Drinks",
-      ),
-    ),
   ],
 ),
           /// 🔥 WHITE BODY
@@ -199,7 +111,7 @@ Container(
 
               /// 🔥 SUPABASE DATA
               child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: service.getSnacks(),
+                future: service.getByTable("foods"),
                 builder: (context, snapshot) {
 
                   if (snapshot.connectionState ==
@@ -211,7 +123,7 @@ Container(
                   if (!snapshot.hasData ||
                       snapshot.data!.isEmpty) {
                     return const Center(
-                        child: Text("No snacks found"));
+                        child: Text("No items found"));
                   }
 
                   final foods = snapshot.data!;

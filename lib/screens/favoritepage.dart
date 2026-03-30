@@ -25,26 +25,24 @@ class _FavoritePageState extends State<FavoritePage> {
 
   final favData = await supabase
       .from('favorites')
-      .select('item_id')
+      .select()
       .eq('user_id', user.id);
 
-  List<Map<String, dynamic>> tempList = [];
-
-  for (var fav in favData) {
-    final food = await supabase
-        .from('foods')
-        .select()
-        .eq('id', fav['item_id'])
-        .single();
-
-    tempList.add(food);
-  }
-
   setState(() {
-    favList = tempList;
+    favList = List<Map<String, dynamic>>.from(favData);
   });
 }
+Future<List<Map<String, dynamic>>> getFavorites() async {
+  final user = supabase.auth.currentUser;
+  if (user == null) return [];
 
+  final data = await supabase
+      .from('favorites')
+      .select()
+      .eq('user_id', user.id);
+
+  return List<Map<String, dynamic>>.from(data);
+}
   Future<void> removeFavorite(int itemId) async {
     await SupabaseService().removeFromFavorites(itemId);
     loadFavorites(); // Refresh list after deletion
@@ -57,18 +55,19 @@ class _FavoritePageState extends State<FavoritePage> {
       body: favList.isEmpty
           ? const Center(child: Text("No Favorites Yet ❤️"))
           : ListView.builder(
+            
               itemCount: favList.length,
               itemBuilder: (context, index) {
                 final item = favList[index];
                 return ListTile(
-                  leading: Image.network(item['image_url'] ?? '', width: 50),
-                  title: Text(item['food_name'] ?? ''),
-                  subtitle: Text("₹${item['food_price']}"),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.favorite, color: Colors.red),
-                    onPressed: () => removeFavorite(item['id']),
-                  ),
-                );
+  leading: Image.network(item['image_url'], width: 50),
+  title: Text(item['item_name']),
+  subtitle: Text("₹${item['food_price']}"),
+  trailing: IconButton(
+    icon: const Icon(Icons.favorite, color: Colors.red),
+    onPressed: () => removeFavorite(item['item_id']),
+  ),
+);
               },
             ),
     );

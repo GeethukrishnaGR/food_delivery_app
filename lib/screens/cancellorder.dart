@@ -1,5 +1,5 @@
-import 'package:bitenow/screens/cancelsuccess.dart';
 import 'package:flutter/material.dart';
+import 'package:bitenow/screens/cancelsuccess.dart';
 
 class Cancellorder extends StatefulWidget {
   const Cancellorder({super.key});
@@ -10,6 +10,7 @@ class Cancellorder extends StatefulWidget {
 
 class _CancellorderState extends State<Cancellorder> {
   String? selectedReason;
+  final TextEditingController otherController = TextEditingController();
 
   final List<String> reasons = [
     "Changed my mind",
@@ -22,11 +23,13 @@ class _CancellorderState extends State<Cancellorder> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Column(
         children: [
+
+          /// 🔶 HEADER
           Container(
             height: size.height * 0.16,
             width: double.infinity,
@@ -35,41 +38,43 @@ class _CancellorderState extends State<Cancellorder> {
             child: const Text(
               "Cancel Order",
               style: TextStyle(
-                fontSize: 30,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
           ),
 
+          /// 🔶 BODY
           Expanded(
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(size.width * 0.05),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(40),
                 ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+
+                  Text(
                     "Please let us know why you’re cancelling this order. Your feedback helps us improve our service.",
+                    style: TextStyle(
+                      fontSize: size.width * 0.035,
+                    ),
                   ),
 
-                  const SizedBox(height: 10),
+                  SizedBox(height: size.height * 0.02),
 
                   const Divider(
                     thickness: 1,
                     color: Color.fromARGB(255, 251, 184, 206),
                   ),
 
-                  
-
-                  /// ✅ RADIO LIST
+                  /// 🔶 RADIO OPTIONS
                   Expanded(
                     child: ListView(
                       children: reasons.map((reason) {
@@ -78,11 +83,10 @@ class _CancellorderState extends State<Cancellorder> {
                             RadioListTile<String>(
                               title: Text(reason),
                               value: reason,
-                              // ignore: deprecated_member_use
                               groupValue: selectedReason,
                               activeColor: Colors.pink,
-                              controlAffinity: ListTileControlAffinity.trailing,
-                              // ignore: deprecated_member_use
+                              controlAffinity:
+                                  ListTileControlAffinity.trailing,
                               onChanged: (value) {
                                 setState(() {
                                   selectedReason = value;
@@ -99,43 +103,54 @@ class _CancellorderState extends State<Cancellorder> {
                     ),
                   ),
 
+                  /// 🔶 OTHER TEXT FIELD
                   if (selectedReason == "Other")
-  Container(
-    padding: const EdgeInsets.symmetric(horizontal: 15),
-    decoration: BoxDecoration(
-      color: Colors.grey.shade100,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: Colors.grey.shade300),
-    ),
-    child: const TextField(
-      maxLines: 3,
-      decoration: InputDecoration(
-        hintText: "Enter your reason",
-        border: InputBorder.none, // removes default underline
-      ),
-    ),
-  ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      margin: EdgeInsets.only(bottom: size.height * 0.02),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: TextField(
+                        controller: otherController,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          hintText: "Enter your reason",
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
 
-const SizedBox(height: 15),
+                  /// 🔶 SUBMIT BUTTON
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange,
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (selectedReason != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CancelSuccess(),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      "Submit",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
 
-/// ✅ BUTTON
-ElevatedButton(
-  style: ElevatedButton.styleFrom(
-    backgroundColor: Colors.deepOrange,
-    minimumSize: const Size(double.infinity, 50),
-  ),
-  onPressed: () {
-    if (selectedReason != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const CancelSuccess(),
-        ),
-      );
-    }
-  },
-  child: const Text("Submit"),
-),
                 ],
               ),
             ),

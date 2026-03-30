@@ -1,10 +1,11 @@
-
-import 'package:bitenow/screens/dashboard.dart';
-import 'package:bitenow/screens/login.dart';
-
+import 'package:bitenow/provider/categoryprovider.dart';
+import 'package:bitenow/provider/orderprovider.dart';
+import 'package:bitenow/screens/myorders.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:provider/provider.dart';
+import 'screens/dashboard.dart';
+import 'screens/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,20 +15,29 @@ void main() async {
     anonKey: 'sb_publishable_OvQo7nfuLeyqpVO1EaRE0A_GJ9yTUKR',
   );
 
-  runApp(const MyApp());
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        // Add your CategoryProvider here too since the error mentions it!
+        ChangeNotifierProvider(create: (_) => CategoryProvider()), 
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
- @override
+  @override
   Widget build(BuildContext context) {
-   
     final session = Supabase.instance.client.auth.currentSession;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // If session exists, go to Dashboard. If not, go to Login.
       home: session != null ? const Dashboard() : const Login(),
     );
   }

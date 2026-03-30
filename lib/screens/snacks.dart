@@ -1,11 +1,9 @@
 import 'package:bitenow/screens/cartpage.dart';
 import 'package:bitenow/screens/dessert.dart';
 import 'package:bitenow/screens/drinks.dart';
-import 'package:bitenow/screens/homepage.dart';
 import 'package:bitenow/screens/meals.dart';
 import 'package:bitenow/screens/profilepage.dart';
 import 'package:bitenow/screens/vegan.dart';
-import 'package:bitenow/services/supaservice.dart';
 import 'package:bitenow/widget/categoryitem.dart';
 import 'package:flutter/material.dart';
 
@@ -237,32 +235,18 @@ class _SnacksState extends State<Snacks> {
 
                     /// 🔷 APPLY BUTTON
                     Center(
-                      child: GestureDetector(
-                      onTap: () async {
-  final data = await SupabaseService().getSnacks();
-
-  print("DATA SENT TO HOME: $data"); // 👈 DEBUG
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => Homepage(filteredData: data),
-    ),
-  );
-},
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.deepOrange,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            "Apply",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.deepOrange,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          "Apply",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

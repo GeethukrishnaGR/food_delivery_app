@@ -1,22 +1,23 @@
 
 
+import 'package:bitenow/provider/categoryprovider.dart';
 import 'package:bitenow/recommendation.dart';
 import 'package:bitenow/screens/bestseller.dart';
-import 'package:bitenow/screens/desserts.dart';
-import 'package:bitenow/screens/drinkss.dart';
+
 import 'package:bitenow/screens/fooddetailpage.dart';
-import 'package:bitenow/screens/mealss.dart';
+
 import 'package:bitenow/screens/cartpage.dart';
 
 import 'package:bitenow/screens/notificationpage.dart';
 import 'package:bitenow/screens/profilepage.dart';
 
 import 'package:bitenow/services/supaservice.dart';
-import 'package:bitenow/screens/viewall.dart';
+
 import 'package:bitenow/screens/snackss.dart';
-import 'package:bitenow/screens/vegans.dart';
 import 'package:bitenow/widget/categoryitem.dart';
+import 'package:bitenow/widget/onboarditem.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class Homepage extends StatefulWidget {
@@ -35,12 +36,14 @@ class _HomepageState extends State<Homepage> {
 Future<List<Map<String, dynamic>>>? foodList;
 String selectedCategory = "";
 List<Map<String, dynamic>> selectedSnacks = [];
-
+TextEditingController searchController = TextEditingController();
+List foods = [];          // original list
+List filteredFoods = [];  
 
 @override
 void initState() {
   super.initState();
-
+  filteredFoods = foods;
   if (widget.filteredData != null && widget.filteredData!.isNotEmpty) {
     print("USING FILTERED DATA");
     foodList = Future.value(widget.filteredData);
@@ -49,6 +52,16 @@ void initState() {
     print("USING DEFAULT FOODS");
     foodList = service.getFoods();
   }
+}
+void searchFood(String query) {
+  final results = foods.where((food) {
+    final name = food['name'].toString().toLowerCase();
+    return name.contains(query.toLowerCase());
+  }).toList();
+
+  setState(() {
+    filteredFoods = results;
+  });
 }
   @override
   Widget build(BuildContext context) {
@@ -72,43 +85,53 @@ void initState() {
 
                     const SizedBox(width: 20),
 
-                    Container(
-                      width: size.width * 0.60,
-                      height: 30,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
+                   Container(
+  width: size.width * 0.60,
+  height: 40,
+  padding: const EdgeInsets.symmetric(horizontal: 10),
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(20),
+  ),
+  child: Row(
+    children: [
 
-                          const Icon(Icons.search, color: Colors.grey),
-                          const SizedBox(width: 5),
+      const Icon(Icons.search, color: Colors.grey),
+      const SizedBox(width: 5),
 
-                          const Text(
-                            "Search...",
-                            style: TextStyle(color: Colors.grey),
-                          ),
+      /// 🔥 TEXTFIELD (IMPORTANT)
+      Expanded(
+        child: TextField(
+          controller: searchController,
+          onChanged: searchFood,
+          decoration: const InputDecoration(
+            hintText: "Search...",
+            border: InputBorder.none,
+          ),
+        ),
+      ),
 
-                          const Spacer(),
-
-                          Container(
-                            height: 28,
-                            width: 28,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.pinkAccent,
-                            ),
-                            child: const Icon(
-                              Icons.filter_list,
-                              size: 16,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+      GestureDetector(
+        onTap: () {
+          // you can open filter page here
+        },
+        child: Container(
+          height: 28,
+          width: 28,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.pinkAccent,
+          ),
+          child: const Icon(
+            Icons.filter_list,
+            size: 16,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    ],
+  ),
+),
 
                     const SizedBox(width: 10),
 
@@ -303,14 +326,7 @@ GestureDetector(
     ),
 
      GestureDetector(
-    onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Mealss(), // category page
-      ),
-    );
-  },
+    
       child: CategoryItem(
         Icons.restaurant,
         "Meals",
@@ -318,14 +334,7 @@ GestureDetector(
       ),
     ),
     GestureDetector(
-    onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Vegans(), // category page
-      ),
-    );
-  },
+   
       child: CategoryItem(
         Icons.eco,
         "Vegan",
@@ -334,12 +343,7 @@ GestureDetector(
     ),
 
     GestureDetector(
-      onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => Desserts()),
-  );
-},
+    
       child: CategoryItem(
         Icons.icecream,
         "Dessert",
@@ -348,12 +352,7 @@ GestureDetector(
     ),
 
     GestureDetector(
-      onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => Drinkss()),
-  );
-},
+     
       child: CategoryItem(
         Icons.local_drink,
         "Drinks",
@@ -379,27 +378,17 @@ GestureDetector(
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                           onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const Bestseller(),
-      ),
-    );
-  },
-                          child: const Text(
-                            "Best Seller",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
+                        const Text(
+                          "Best Seller",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         GestureDetector(
   onTap: () {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const ViewAll(),
+        builder: (_) => const Bestseller(),
       ),
     );
   },
@@ -482,30 +471,26 @@ if (foodList != null)
                 top: 5,
                 right: 5,
                 child: GestureDetector(
-                  onTap: () async {
-                    final newValue = !(food['is_favorite'] ?? false);
+  onTap: () async {
+    await SupabaseService().addToFavorites(food);
 
-                    await service.toggleFavorite(food['id'], newValue);
-
-                    setState(() {
-                      food['is_favorite'] = newValue;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      (food['is_favorite'] ?? false)
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: Colors.red,
-                      size: 16,
-                    ),
-                  ),
-                ),
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Added to Favorites ❤️")),
+    );
+  },
+  child: Container(
+    padding: const EdgeInsets.all(4),
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      shape: BoxShape.circle,
+    ),
+    child: const Icon(
+      Icons.favorite_border,
+      color: Colors.red,
+      size: 16,
+    ),
+  ),
+)
               ),
 
               /// PRICE
@@ -581,7 +566,15 @@ if (foodList != null)
       ),
 const SizedBox(height: 10),
 
-GestureDetector(
+   Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Recommend",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        GestureDetector(
   onTap: () {
     Navigator.push(
       context,
@@ -590,165 +583,160 @@ GestureDetector(
       ),
     );
   },
-  child: Align(
-    alignment: Alignment.centerLeft,
-    child: Text(
-      "Recommend",
-      style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
+  child: const Text(
+    "View All >",
+    style: TextStyle(
+      fontSize: 16,
+      color: Colors.deepOrange,
+      fontWeight: FontWeight.w500,
     ),
   ),
 ),
+                      ],
+                    ),
+
 SingleChildScrollView(
   scrollDirection: Axis.horizontal,
-  child: FutureBuilder<List<Map<String, dynamic>>>(
-    future: SupabaseService().getMeals(), // 🔥 your supabase function
-    builder: (context, snapshot) {
+  child:Consumer<CategoryProvider>(
+  builder: (context, provider, child) {
 
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Padding(
-          padding: EdgeInsets.all(20),
-          child: CircularProgressIndicator(),
-        );
-      }
+    final foods = provider.foods;
 
-      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-        return const Padding(
-          padding: EdgeInsets.all(20),
-          child: Text("No food found"),
-        );
-      }
+    if (foods.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-      final foods = snapshot.data!;
+    return SingleChildScrollView(
+  scrollDirection: Axis.horizontal,
+  child: Row(
+    children: [
 
-      return Row(
-        children: [
+      const SizedBox(width: 10),
 
-          const SizedBox(width: 10),
+      ...foods.map((food) {
 
-          ...foods.map((food) {
+       final price = int.tryParse(food['food_price']?.toString() ?? '') ?? 0;
+        final imageUrl = food['image_url'] ?? '';
 
-            /// ✅ FIX PRICE TYPE ERROR
-            final price = food['food_price'] is int
-                ? food['food_price']
-                : int.tryParse(food['food_price'].toString()) ?? 0;
+        return Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: GestureDetector(
 
-            final imageUrl = food['image_url'] ?? '';
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FoodDetailPage(food: food),
+                ),
+              );
+            },
 
-            return Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: GestureDetector(
+            child: Stack(
+              children: [
 
-                
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => FoodDetailPage(food: food),
-                    ),
-                  );
-                },
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: imageUrl.isNotEmpty
+                      ? Image.network(
+                          imageUrl,
+                          height: 170,
+                          width: 150,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.broken_image),
+                        )
+                      : Container(
+                          height: 170,
+                          width: 150,
+                          color: Colors.grey.shade300,
+                          child: const Icon(Icons.broken_image),
+                        ),
+                ),
 
-                child: Stack(
-                  children: [
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Row(
+                    children: [
 
-                    /// IMAGE
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: imageUrl.isNotEmpty
-                          ? Image.network(
-                              imageUrl,
-                              height: 170,
-                              width: 150,
-                              fit: BoxFit.cover,
-                            )
-                          : Container(
-                              height: 170,
-                              width: 150,
-                              color: Colors.grey.shade300,
-                              child: const Icon(Icons.broken_image),
-                            ),
-                    ),
-
-                    /// ⭐ RATING + ❤️
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      child: Row(
-                        children: [
-
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.star, color: Colors.orange, size: 14),
-                                SizedBox(width: 3),
-                                Text(
-                                  "4.5",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(width: 6),
-
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.favorite_border,
-                              color: Colors.red,
-                              size: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    /// 💰 PRICE
-                    Positioned(
-                      bottom: 5,
-                      right: 5,
-                      child: Container(
+                      Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.orange,
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text(
-                          "₹$price",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.star, color: Colors.orange, size: 14),
+                            SizedBox(width: 3),
+                            Text("4.5",
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold)),
+                          ],
                         ),
                       ),
-                    ),
 
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
+                      const SizedBox(width: 6),
 
-        ],
-      );
-    },
+                      Positioned(
+                top: 5,
+                right: 5,
+                child: GestureDetector(
+  onTap: () async {
+    await SupabaseService().addToFavorites(food);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Added to Favorites ❤️")),
+    );
+  },
+  child: Container(
+    padding: const EdgeInsets.all(4),
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      shape: BoxShape.circle,
+    ),
+    child: const Icon(
+      Icons.favorite_border,
+      color: Colors.red,
+      size: 16,
+    ),
   ),
+)
+              ),
+                    ],
+                  ),
+                ),
+
+                Positioned(
+                  bottom: 5,
+                  right: 5,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.orange,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      "₹$price",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    ],
+  ),
+);
+  },
+),
 )
                   ],
                   
@@ -763,135 +751,4 @@ SingleChildScrollView(
   }
 }
 
-/// CATEGORY WIDGET
 
-
-/// FOOD CARD
-class FoodCard extends StatelessWidget {
-  final String image;
-  final String price;
-
-  const FoodCard(this.image, this.price, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 15),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(20),
-              bottom: Radius.circular(20),
-            ),
-            child: Image.asset(
-              image,
-              height: 120,
-              width: 80,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned(
-            bottom: 5,
-            right: 5,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-              decoration: BoxDecoration(
-                color: Colors.orange,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                price,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// ONBOARD CARD
-class OnboardItem extends StatelessWidget {
-  final String image;
-  final String title;
-  final String desc;
-final String offer;
-  const OnboardItem(this.image, this.title, this.desc, {super.key, required this.offer});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: Colors.deepOrange,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-
-          /// LEFT SIDE TEXT
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Text(
-                    desc,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
- const SizedBox(height: 8),
-
-                  Text(
-                    offer,
-                    style: const TextStyle(
-                      fontSize: 26,
-                      color: Colors.white,
-                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          /// RIGHT SIDE IMAGE
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.horizontal(
-                right: Radius.circular(20),
-              ),
-              child: Image.asset(
-                image,
-                height: double.infinity,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-
-        ],
-      ),
-    );
-  }
-}

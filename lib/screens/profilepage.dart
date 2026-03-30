@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
+   ProfilePage({super.key});
+final emailController = TextEditingController();
+final nameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     debugPaintSizeEnabled = false;
@@ -40,31 +41,34 @@ class ProfilePage extends StatelessWidget {
     const SizedBox(width: 5),
 
    
-    const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+    Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
 
-        Text(
-          "John Smith",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,color: Colors.white
-          ),
-        ),
-
-        SizedBox(height: 5),
-
-        Text(
-          "john@gmail.com",
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.white,
-          ),
-        ),
-
-      ],
+    Text(
+      nameController.text.isNotEmpty
+          ? nameController.text
+          : "Your Name",
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
     ),
 
+    const SizedBox(height: 5),
+
+    Text(
+      emailController.text.isNotEmpty
+          ? emailController.text
+          : "your@email.com",
+      style: const TextStyle(
+        fontSize: 14,
+        color: Colors.white,
+      ),
+    ),
+  ],
+)
   ],
 ),
  const SizedBox(height: 20),
@@ -88,7 +92,7 @@ class ProfilePage extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>MyOrders(onConfirm: ()async {  print("Confirmed"); },)),
+                            builder: (context) =>MyOrders(onConfirm: ()async {  print("Confirmed"); }, initialTab: '',)),
                       );
                     },
        child: Row(

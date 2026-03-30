@@ -12,7 +12,7 @@ class Recommendation extends StatefulWidget {
 
 class _RecommendationState extends State<Recommendation> {
   final SupabaseService service = SupabaseService();
-
+ Set<int> favoriteIds = {};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +94,7 @@ class _RecommendationState extends State<Recommendation> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
-                          food['title'] ?? "",
+                          food['food_name'] ?? "",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -113,6 +113,45 @@ class _RecommendationState extends State<Recommendation> {
                           ),
                         ),
                       ),
+                       Positioned(
+                top: 5,
+                right: 5,
+                child:   GestureDetector(
+  onTap: () async {
+    final itemId = food['id'];
+
+    setState(() {
+      if (favoriteIds.contains(itemId)) {
+        favoriteIds.remove(itemId);
+      } else {
+        favoriteIds.add(itemId);
+      }
+    });
+
+    // 🔥 Sync with Supabase Database
+    if (favoriteIds.contains(itemId)) {
+      await SupabaseService().addToFavorites(itemId);
+    } else {
+      await SupabaseService().removeFromFavorites(itemId);
+    }
+    
+  },
+  child: Container(
+    padding: const EdgeInsets.all(5),
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      shape: BoxShape.circle,
+    ),
+    child: Icon(
+      favoriteIds.contains(food['id'])
+          ? Icons.favorite
+          : Icons.favorite_border,
+      color: Colors.red,
+      size: 16,
+    ),
+  ),
+)
+              ),
                     ],
                   ),
                 ),
